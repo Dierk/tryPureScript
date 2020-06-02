@@ -1,0 +1,2 @@
+# tryPureScript
+Playing With PureScript
