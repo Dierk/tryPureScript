@@ -1,0 +1,21 @@
+{
+  "name": "tryPurescript",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-console":      "latest",
+    "purescript-math":         "latest",
+    "purescript-monoid":       "latest",
+    "purescript-maybe":        "latest",
+    "purescript-transformers": "latest",
+    "purescript-strings":      "latest",
+    "purescript-lists":        "latest"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "latest"
+  }
+}
