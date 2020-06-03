@@ -18,8 +18,9 @@ foreign import setInnerText :: Element -> String -> Effect Unit
 
 main :: Effect Unit
 main = do
-    document  <- map toNonElementParentNode (window >>= document)
-    container <- getElementById "container" document
+    win       <- window
+    doc       <- document win
+    container <- getElementById "container" (toNonElementParentNode doc)
     case container of
         Nothing      -> throw "no 'container' node!"
         Just element -> setTextContent  "new Text!!!" (toNode element) 
