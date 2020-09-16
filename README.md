@@ -1,13 +1,16 @@
 # Reading Group for the PureScript by Example book
 
 latest version of the book, community edition: https://book.purescript.org/index.html
+
 ## How to Use With Nix
+
 1. Install nix with `curl -L https://nixos.org/nix/install | sh`
 2. Run `nix-shell` in the root directory.
 3. Wait until it has built all dependencies. See the `shell.nix` file where all the dependencies are listed.
 4. That's it. You are now in a new isolated shell and should be able to run `spago test  --main Test.Main` and see all tests passing.
 
 ## How to Add the Purescript Language Server in VSCode
+
 1. Install the [purescript-ide plugin](https://marketplace.visualstudio.com/items?itemName=nwolverson.ide-purescript) for language server support
 2. Add the following settings to your settings.json:
 ```json
