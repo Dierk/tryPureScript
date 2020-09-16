@@ -1,4 +1,6 @@
+# Reading Group for the PureScript by Example book
 
+latest version of the book, community edition: https://book.purescript.org/index.html
 
 ## build instructions
 
