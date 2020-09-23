@@ -33,7 +33,7 @@ insertEntry :: Entry -> AddressBook -> AddressBook
 insertEntry = Cons
 
 findEntry :: String -> String -> AddressBook -> Maybe Entry
-findEntry firstName lastName = myhead <<< filter filterEntry
+findEntry firstName lastName = myhead <<< myfilter filterEntry
   where
   myhead :: AddressBook -> Maybe Entry
   myhead = head
@@ -44,3 +44,8 @@ findEntry firstName lastName = myhead <<< filter filterEntry
   filterEntry :: Entry -> Boolean
   filterEntry entry = entry.firstName == firstName && entry.lastName == lastName
 
+findEntryByStreet :: String -> AddressBook -> Maybe Entry
+findEntryByStreet streetName = head <<< filter filterByStreetName
+  where
+  filterByStreetName :: Entry -> Boolean
+  filterByStreetName entry = entry.address.street == streetName
