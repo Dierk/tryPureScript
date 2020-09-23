@@ -4,7 +4,7 @@ import Prelude
 
 import Control.Plus (empty)
 import Data.List (List(..), filter, head)
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe, maybe)
 
 type Address =
   { street :: String
@@ -47,5 +47,7 @@ findEntry firstName lastName = myhead <<< myfilter filterEntry
 findEntryByStreet :: String -> AddressBook -> Maybe Entry
 findEntryByStreet streetName = head <<< filter filterByStreetName
   where
-  filterByStreetName :: Entry -> Boolean
   filterByStreetName entry = entry.address.street == streetName
+
+isInBook :: String -> String -> AddressBook -> Boolean
+isInBook firstName lastName book = maybe false (const true) (findEntry firstName lastName book)    
