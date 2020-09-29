@@ -37,4 +37,3 @@ findEntry firstName lastName = head <<< filter filterEntry
   where
   filterEntry :: Entry -> Boolean
   filterEntry entry = entry.firstName == firstName && entry.lastName == lastName
-
