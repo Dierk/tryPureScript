@@ -17,7 +17,7 @@ main :: Effect Unit
 main =
   runTest do
     runChapterExamples
-    {-  Move this block comment starting point to enable more tests
+    
     suite "Exercise Group - Recursion" do
       test "Exercise - isEven" do
         assert "0 is even"
@@ -28,6 +28,7 @@ main =
           $ isEven 20
         assertFalse "19 is odd"
           $ isEven 19
+         
       suite "Exercise - countEven" do
         test "[] has none" do
           Assert.equal 0
@@ -76,6 +77,7 @@ main =
           $ isPrime 4
         assert "997 is prime"
           $ isPrime 997
+           
       suite "Exercise - cartesianProduct" do
         let
           -- Don't worry if this this testing helper function signature looks confusing.
@@ -97,6 +99,7 @@ main =
           [ [ "5", "five" ], [ "5", "six" ], [ "6", "five" ], [ "6", "six" ] ]
           [ "5", "6" ]
           [ "five", "six" ]
+         
       suite "Exercise - triples" do
         -- Sorting to allow for any ordering
         test "single element array result" do
@@ -107,6 +110,7 @@ main =
           Assert.equal (sort [ [ 3, 4, 5 ], [ 5, 12, 13 ], [ 6, 8, 10 ] ])
             $ sort
             $ triples 13
+            
       suite "Exercise - factorize" do
         test "Test small non-prime number" do
           Assert.equal [ 3, 2 ]
@@ -114,6 +118,7 @@ main =
         test "Test number that uses the prime numbers less than 10" do
           Assert.equal [ 7, 5, 3, 2 ]
             $ factorize 210
+            
     suite "Exercise Group - Folds and Tail Recursion" do
       test "Exercise - allTrue" do
         assert "all elements true"
@@ -130,6 +135,7 @@ main =
         test "Verify 44" do
           Assert.equal 1134903170
             $ fibTailRec 44
+           
       suite "Exercise - reverse" do
         test "Empty Array" do
           Assert.equal ([] :: Array Int)
@@ -140,6 +146,7 @@ main =
         test "More than 1 element" do
           Assert.equal [ 3, 2, 1 ]
             $ reverse [ 1, 2, 3 ]
+            
     suite "Exercise Group - Filesystem" do
       test "Exercise - onlyFiles" do
         Assert.equal
@@ -153,10 +160,12 @@ main =
           ]
           $ map filename
           $ onlyFiles root
+           
       test "Exercise - largestSmallest for root" do
         Assert.equal [ "/home/user/code/js/test.js", "/etc/hosts" ]
           $ map fst
           $ largestSmallest root
+           
       suite "Exercise - whereIs" do
         test "locates a file"
           $ Assert.equal (Just ("/bin/"))
@@ -164,7 +173,7 @@ main =
         test "doesn't locate a file"
           $ Assert.equal (Nothing)
           $ whereIs "lss"
-
+{-  Move this block comment starting point to enable more tests
 -}
 runChapterExamples :: TestSuite
 runChapterExamples =

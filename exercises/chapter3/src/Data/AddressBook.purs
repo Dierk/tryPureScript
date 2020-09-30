@@ -33,8 +33,15 @@ insertEntry :: Entry -> AddressBook -> AddressBook
 insertEntry = Cons
 
 findEntry :: String -> String -> AddressBook -> Maybe Entry
-findEntry firstName lastName = head <<< filter filterEntry
+findEntry firstName lastName = myhead <<< myfilter filterEntry
   where
+  -- typen spezifizieren von head
+  myhead :: AddressBook -> Maybe Entry
+  myhead = head
+
+  myfilter :: (Entry -> Boolean) -> AddressBook -> AddressBook
+  myfilter = filter
+
   filterEntry :: Entry -> Boolean
   filterEntry entry = entry.firstName == firstName && entry.lastName == lastName
 
