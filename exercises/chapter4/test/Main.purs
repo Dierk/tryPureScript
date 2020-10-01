@@ -17,7 +17,6 @@ main :: Effect Unit
 main =
   runTest do
     runChapterExamples
-    {-  Move this block comment starting point to enable more tests
     suite "Exercise Group - Recursion" do
       test "Exercise - isEven" do
         assert "0 is even"
@@ -65,6 +64,11 @@ main =
           Assert.equal [ 0.0, 2.0, 3.0 ]
             $ keepNonNegativeRewrite [ -1.5, -1.0, 0.0, -0.1, 2.0, 3.0, -4.0 ]
     suite "Exercise Group - Flattening, Comprehensions, Do Notation, and Guards" do
+      test "factors" do
+        Assert.equal [[1,2]]
+          $ myFactors 2
+        Assert.equal [[1,12], [2,6], [3,4] ]
+          $ myFactors 12
       test "Exercise - isPrime" do
         assertFalse "0 is not prime"
           $ isPrime 0
@@ -114,6 +118,7 @@ main =
         test "Test number that uses the prime numbers less than 10" do
           Assert.equal [ 7, 5, 3, 2 ]
             $ factorize 210
+    {-  Move this block comment starting point to enable more tests
     suite "Exercise Group - Folds and Tail Recursion" do
       test "Exercise - allTrue" do
         assert "all elements true"

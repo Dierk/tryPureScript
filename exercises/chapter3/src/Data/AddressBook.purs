@@ -7,8 +7,8 @@ import Data.List (List(..), filter, head, nubBy)
 import Data.Maybe (Maybe, maybe)
 
 type Address =
-  { street :: String
-  , city   :: String
+  { street :: String 
+  , city   :: String 
   , state  :: String
   }
 
