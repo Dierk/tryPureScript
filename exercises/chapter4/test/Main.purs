@@ -118,7 +118,6 @@ main =
         test "Test number that uses the prime numbers less than 10" do
           Assert.equal [ 7, 5, 3, 2 ]
             $ factorize 210
-    {-  Move this block comment starting point to enable more tests
     suite "Exercise Group - Folds and Tail Recursion" do
       test "Exercise - allTrue" do
         assert "all elements true"
@@ -129,6 +128,15 @@ main =
         test "Verify 0" do
           Assert.equal 1
             $ fibTailRec 0
+        test "Verify 1" do
+          Assert.equal 1
+            $ fibTailRec 1
+        test "Verify 2" do
+          Assert.equal 2
+            $ fibTailRec 2
+        test "Verify 3" do
+          Assert.equal 3
+            $ fibTailRec 3
         test "Verify 9" do
           Assert.equal 55
             $ fibTailRec 9
@@ -138,13 +146,13 @@ main =
       suite "Exercise - reverse" do
         test "Empty Array" do
           Assert.equal ([] :: Array Int)
-            $ reverse []
+            $ myreverse []
         test "Singleton Array" do
           Assert.equal [ 1 ]
-            $ reverse [ 1 ]
+            $ myreverse [ 1 ]
         test "More than 1 element" do
           Assert.equal [ 3, 2, 1 ]
-            $ reverse [ 1, 2, 3 ]
+            $ myreverse [ 1, 2, 3 ]
     suite "Exercise Group - Filesystem" do
       test "Exercise - onlyFiles" do
         Assert.equal
@@ -165,10 +173,11 @@ main =
       suite "Exercise - whereIs" do
         test "locates a file"
           $ Assert.equal (Just ("/bin/"))
-          $ whereIs "ls"
+          $ whereIs root "ls"
         test "doesn't locate a file"
           $ Assert.equal (Nothing)
-          $ whereIs "lss"
+          $ whereIs root "lss"
+    {-  Move this block comment starting point to enable more tests
 
 -}
 runChapterExamples :: TestSuite

@@ -1,11 +1,14 @@
 module Test.MySolutions where
 
+import Data.Path
+import Data.Tuple
 import Prelude
+import Test.Examples
 
 import Control.MonadZero (guard)
-import Data.Array (concat, filter, head, tail, reverse, sort, (..))
+import Data.Array (concat, elem, filter, foldl, head, reverse, sort, sortWith, tail, (..))
 import Data.Int (floor, quot, toNumber)
-import Data.Maybe (Maybe, fromMaybe)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Math (sqrt)
 
 isEven :: Int -> Boolean
@@ -67,3 +70,42 @@ factorize n = if isPrime n
     then [n]
     else [high] <> factorize (quot n high) where
       high = fromMaybe n $ highestPrimeFactor n 
+
+allTrue :: Array Boolean -> Boolean
+allTrue = foldl (&&) true
+
+-- foldl (==) false xs   -- returns true when xs = [false], [false, true, false], [false, true, false, true, false]  
+
+fibTailRec :: Int -> Int
+fibTailRec 0 = 1   
+fibTailRec 1 = 1  
+fibTailRec n = ftrI 2 1 1 where  
+   ftrI x min2 min1 =
+     if (x == n)
+     then min2 + min1
+     else ftrI (x+1) min1 (min2 + min1) 
+
+myreverse :: forall a. Array a -> Array a
+myreverse = foldl (\acc elem -> [elem] <> acc) []       
+
+onlyFiles :: Path -> Array Path
+onlyFiles path = filter (\p -> false == isDirectory p) $ allFiles path
+
+largestSmallest :: Path -> Array (Tuple String Int)
+largestSmallest path = [ largest, smallest ] where
+  files             = onlyFiles path
+  sortCriterion p   = fromMaybe 0 (size p)
+  sortedPaths       = sortWith sortCriterion files
+  pop paths         = fromMaybe path $ head paths
+  smallest          = Tuple (filename $ pop sortedPaths) 0
+  largest           = Tuple (filename $ pop $ reverse sortedPaths)  0
+
+whereIs :: Path -> String -> Maybe String
+whereIs dir name = 
+  let filesInDir = (\path -> false == isDirectory path) <$?> ls dir 
+      dirsInDir  = (\path -> true  == isDirectory path) <$?> ls dir    
+  in  if (filename dir <> name) `elem` (filename <$> filesInDir)
+      then Just (filename dir)
+      else let descentMaybes = (\subdir -> whereIs subdir name) <$> dirsInDir    
+               descentJusts  = (\mb -> mb /= Nothing) <$?>  descentMaybes  
+           in  fromMaybe Nothing $ head descentJusts
