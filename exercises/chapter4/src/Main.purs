@@ -1,6 +1,6 @@
 module Main where
 
-import Prelude
+import Prelude (Unit)
 
 import Effect (Effect)
 import Effect.Console (log)

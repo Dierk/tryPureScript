@@ -6,17 +6,16 @@ import Data.Array (concatMap, filter, null, tail, (..), (:))
 import Data.Foldable (product)
 import Data.Maybe (fromMaybe)
 import Data.Path (Path, ls)
+import Math (floor, sqrt)
+import Data.Int (toNumber)
 
 fact :: Int -> Int
 fact 0 = 1
-
 fact n = n * fact (n - 1)
 
 fib :: Int -> Int
 fib 0 = 1
-
 fib 1 = 1
-
 fib n = fib (n - 1) + fib (n - 2)
 
 length :: forall a. Array a -> Int
@@ -47,10 +46,17 @@ factorsV3 n = do
   j <- i .. n
   guard $ i * j == n
   pure [ i, j ]
+{-
+myFactors :: Int -> Array (Array Int)
+myFactors n = do
+  i <- 1 .. (floor $ sqrt $ toNumber n)
+  let j = quot n i
+  guard $ i * j == n
+  pure [ i, j ]
+  -}
 
 factTailRec :: Int -> Int -> Int
 factTailRec 0 acc = acc
-
 factTailRec n acc = factTailRec (n - 1) (acc * n)
 
 lengthTailRec :: forall a. Array a -> Int

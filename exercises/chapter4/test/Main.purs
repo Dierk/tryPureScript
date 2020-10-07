@@ -1,7 +1,7 @@
 module Test.Main where
 
-import Prelude
-import Test.Examples
+import Prelude (class Eq, class Ord, class Show, Unit, discard, map, negate, ($), (<$>), (==))
+import Test.Examples (allFiles, allFiles', fact, factTailRec, factors, factorsV2, factorsV3, fib, length, lengthTailRec)
 import Test.MySolutions
 import Data.Array (sort)
 import Data.Maybe (Maybe(..))

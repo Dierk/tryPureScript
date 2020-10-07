@@ -31,7 +31,7 @@ samplePicture =
 main :: Effect Unit
 main =
   runTest do
-    {-  Move this block comment starting point to enable more tests
+    
     suite "Exercise Group - Simple Pattern Matching" do
       test "Exercise - factorial" do
         Assert.equal 1
@@ -64,6 +64,7 @@ main =
           $ pascal 10 5
         Assert.equal 1
           $ pascal 5 5
+          
     suite "Exercise Group - Array and Record Patterns" do
       test "Exercise - sameCity" do
         Assert.equal true
@@ -77,6 +78,7 @@ main =
           $ fromSingleton "default" ["B"]
         Assert.equal "default"
           $ fromSingleton "default" ["B", "C", "D"]
+         
     suite "Exercise Group - Algebraic Data Types" do
       test "Exercise - circleAtOrigin" do
         Assert.equal origin
@@ -105,6 +107,7 @@ main =
           $ shapeText $ Rectangle origin 1.0 1.0
         Assert.equal Nothing
           $ shapeText $ Line origin (Point { x: 1.0, y: 1.0 })
+           
     suite "Exercise Group - Vector Graphics" do
       test "Exercise - area" do
         Assert.equal 50
@@ -115,9 +118,11 @@ main =
           $ round $ area $ Line origin (Point { x: 2.0, y: 2.0 })
         Assert.equal 0
           $ round $ area $ Text origin "Text has no area!"
+           
       test "Exercise - Clipped shapeBounds" do
         Assert.equal (Bounds { top: -2.0, left: -2.0, right: 2.0, bottom: 2.0 })
           $ shapeBounds (Clipped samplePicture (Point { x: 0.0, y: 0.0 }) 4.0 4.0)
         Assert.equal (Bounds { top: 3.0, left: 3.0, right: 7.0, bottom: 7.0 })
           $ shapeBounds (Clipped samplePicture (Point { x: 5.0, y: 5.0 }) 4.0 4.0)
+           {-  Move this block comment starting point to enable more tests
     -}

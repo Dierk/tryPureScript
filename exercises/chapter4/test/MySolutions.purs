@@ -1,16 +1,15 @@
 module Test.MySolutions where
 
-
-import Prelude
+import Prelude 
 
 import Control.MonadZero (guard)
-import Data.Array (length, filter, (..), cons, (:), head, tail, null, last)
-import Data.Foldable (foldr, product, foldl)
+import Data.Array (length, filter, (..), cons, (:), null, last)
+import Data.Foldable (foldr, foldl)
 import Data.Int (rem, quot)
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Path (Path, root, size, filename, isDirectory, ls)
 import Data.Tuple (Tuple(..), snd)
-import Test.Examples (factors, allFiles)
+import Test.Examples (factors)
 import Data.String.Common (split)
 import Data.String.Pattern (Pattern(..))
 
@@ -21,12 +20,12 @@ isEven 0 = true
 isEven 1 = false
 isEven n = isEven (n -2)
 
-isTrue :: Boolean -> Int
-isTrue true = 1
-isTrue false = 0
-
 countEven :: Array Int -> Int
 countEven arr = foldr (+) 0 (map (\x -> isTrue (isEven x)) arr)
+    where
+        isTrue :: Boolean -> Int
+        isTrue true = 1
+        isTrue false = 0
 
 squared :: Array Number -> Array Number
 squared = map (\x -> x*x)
@@ -34,13 +33,18 @@ squared = map (\x -> x*x)
 keepNonNegative :: Array Number -> Array Number
 keepNonNegative = filter (\n -> n >= 0.0)
 
-infix 10 filter as <$?>
+infix 4 filter as <$?>
+-- 4 ist der infix operator von map
 
 keepNonNegativeRewrite :: Array Number -> Array Number
 keepNonNegativeRewrite arr = (\n -> n >= 0.0) <$?> arr
 
 isPrime :: Int -> Boolean
 isPrime n = n > 1 && (length (factors n)) == 1
+
+-- factors
+-- von 1 -> floor sqrt n -> i
+-- j kann berechnet werden (quad rem)
 
 cartesianProduct ::forall a. Array a-> Array a-> Array (Array a)
 cartesianProduct xs ys = do
@@ -70,8 +74,9 @@ factorize n = factorize' 2 n []
         else 
             factorize' (divisor+1) n result
 
+
 allTrue :: Array Boolean -> Boolean
-allTrue = foldl (==) true
+allTrue = foldl (&&) true
 
 
 fibTailRec :: Int -> Int
@@ -90,7 +95,7 @@ reverse = foldl  (\xs x -> [ x ] <> xs)  []
 
 onlyFiles :: Path -> Array Path
 onlyFiles file =
-    if isDirectory file == true then
+    if isDirectory file then
         do
             child <- ls file
             onlyFiles child
@@ -100,7 +105,7 @@ onlyFiles file =
             onlyFiles child
 
 
-
+-- Solution is complicated
 largestSmallest :: Path -> Array (Tuple String Int)
 largestSmallest file = 
     let files = allSizes (onlyFiles file)
