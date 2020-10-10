@@ -16,10 +16,11 @@ showPoint (Point { x, y }) =
   "(" <> show x <> ", " <> show y <> ")"
 
 data Shape
-  = Circle Point Number
+  = Circle    Point Number
   | Rectangle Point Number Number
-  | Line Point Point
-  | Text Point String
+  | Line      Point Point
+  | Text      Point String
+  | Clipped   Picture Point Number Number
 
 showShape :: Shape -> String
 showShape (Circle c r) =
@@ -30,6 +31,8 @@ showShape (Line start end) =
   "Line [start: " <> showPoint start <> ", end: " <> showPoint end <> "]"
 showShape (Text loc text) =
   "Text [location: " <> showPoint loc <> ", text: " <> show text <> "]"
+showShape (Clipped _ p w h) =
+  "Clipped picture to [" <> showShape (Rectangle p w h) <> "]"
 
 origin :: Point
 origin = Point { x: 0.0, y: 0.0 }
@@ -39,6 +42,7 @@ getCenter (Circle c r) = c
 getCenter (Rectangle c w h) = c
 getCenter (Line (Point s) (Point e)) = Point { x: s.x - e.x, y: s.y - e.y }
 getCenter (Text loc text) = loc
+getCenter (Clipped pic p w h) = getCenter (Rectangle p w h) 
 
 type Picture = Array Shape
 
@@ -85,6 +89,7 @@ shapeBounds (Text (Point { x, y }) _) = Bounds
   , bottom: y
   , right:  x
   }
+shapeBounds (Clipped _ p w h) = shapeBounds (Rectangle p w h) 
 
 union :: Bounds -> Bounds -> Bounds
 union (Bounds b1) (Bounds b2) = Bounds

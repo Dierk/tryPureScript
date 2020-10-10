@@ -68,6 +68,7 @@ centerShape (Line (Point s) (Point e)) =
   deltaX = (e.x + s.x) / 2.0
   deltaY = (e.y + s.y) / 2.0
 centerShape (Text loc text) = Text origin text
+centerShape untouched = untouched
 
 scaleShape :: Number -> Shape -> Shape
 scaleShape i (Circle c r) = Circle c (r * i)
@@ -77,7 +78,7 @@ scaleShape i (Line (Point s) (Point e)) =
     (Point { x: s.x * i, y: s.y * i })
     (Point { x: e.x * i, y: e.y * i })
   )
-scaleShape i text = text
+scaleShape i untouched = untouched
 
 doubleScaleAndCenter :: Shape -> Shape
 doubleScaleAndCenter = centerShape <<< scaleShape 2.0
