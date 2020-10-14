@@ -62,7 +62,6 @@ data ShapeExt
   = Clipped Picture Point Number Number
   | Shape Shape
 
-
 shapeBounds :: ShapeExt -> Bounds
 shapeBounds (Shape s) = DataP.shapeBounds s
 shapeBounds (Clipped pic pt w h) = DataP.intersect (DataP.bounds pic) (DataP.shapeBounds (Rectangle pt w h))

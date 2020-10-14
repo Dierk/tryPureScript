@@ -1,6 +1,6 @@
 module Test.Main where
 
-import Prelude
+import Prelude (Ordering(..), Unit, compare, discard, map, mempty, negate, show, ($), (*), (+), (<>))
 import Data.Foldable (foldMap, foldl, foldr)
 import Data.Hashable (hash)
 import Data.List (List(..), (:))
@@ -9,16 +9,18 @@ import Partial.Unsafe (unsafePartial)
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 import Test.Unit.Main (runTest)
+import Test.MySolutions
 
 main :: Effect Unit
 main =
   runTest do
     runChapterExamples
-    {-  Move this block comment starting point to enable more tests
+   
     test "Exercise Group - Show Me" do
       -- Tests for the first exercise in this chapter (Show Shape)
       -- can be found at the end of the previous chapter (chapter 5).
       Assert.equal true true
+       
     suite "Exercise Group - Common Type Classes" do
       suite "Exercise - Show and Eq for Complex" do
         test "Show Complex" do
@@ -36,6 +38,7 @@ main =
           Assert.expectFailure "should not be equal"
             $ Assert.equal (Complex { real: 5.0, imaginary: 2.0 })
             $ Complex { real: 1.0, imaginary: 2.0 }
+            
     suite "Exercise Group - Constraints and Dependencies" do
       suite "Exercise - Eq for NonEmpty" do
         test "NonEmpty equals" do
@@ -55,6 +58,7 @@ main =
           Assert.equal (NonEmpty 10 [ 20, 30 ])
             $ map (_ * 10)
             $ NonEmpty 1 [ 2, 3 ]
+            
       suite "Exercise - Ord for Extended" do
         -- Type annotation necessary to ensure there is an Ord instance for inner type (Int in this case)
         test "Extended compare inf inf" do
@@ -79,6 +83,7 @@ main =
           Assert.equal LT
             $ compare (Finite 5)
             $ Finite 6
+            
       suite "Exercise - Foldable for NonEmpty" do
         test "NonEmpty foldl" do
           Assert.equal 123
@@ -105,15 +110,17 @@ main =
           Assert.equal "123"
             $ foldMap (\x -> show x)
             $ OneMore 1 (2 : 3 : Nil)
+           
     suite "Exercise Group - More or less than one Type argument" do
       test "Exercise - unsafeMaximum" do
         Assert.equal 42
           $ unsafePartial
           $ unsafeMaximum [ 1, 2, 42, 3 ]
+            
       let
         m1 = Multiply 3
 
-        m2 = Multiply 4
+        m2 = Multiply 4     
       suite "Exercise - Action Class - repeatAction instance" do
         -- Getting Multiply Int to work is a warm-up
         suite "Multiply Int" do
@@ -129,6 +136,7 @@ main =
             Assert.equal 60
               $ act (m1 <> m2) a
         -- Multiply String is the actual exercise question
+      
         suite "Multiply String" do
           let
             a = "foo"
@@ -141,6 +149,7 @@ main =
           test "Multiply String append concrete" do
             Assert.equal "foofoofoofoofoofoofoofoofoofoofoofoo"
               $ act (m1 <> m2) a
+                
       suite "Exercise - Action Class - actionArray instance" do
         suite "Multiply Array Int" do
           let
@@ -154,6 +163,7 @@ main =
           test "Multiply Array Int append concrete" do
             Assert.equal [ 12, 24, 36 ]
               $ act (m1 <> m2) a
+              
         suite "Multiply Array String" do
           let
             a = [ "foo", "bar", "baz" ]
@@ -170,6 +180,7 @@ main =
               , "bazbazbazbazbazbazbazbazbazbazbazbaz"
               ]
               $ act (m1 <> m2) a
+              
       suite "Exercise - Action Class - actionSelf instance" do
         let
           a = Self m1
@@ -182,6 +193,7 @@ main =
         test "Multiply Self append concrete" do
           Assert.equal 72
             $ act (act (m1 <> m2) a) 2
+           
     suite "Exercise Group - Hashes" do
       suite "Exercise - arrayHasDuplicates" do
         test "No dupe" do
@@ -193,6 +205,7 @@ main =
         test "Only hash dupe" do
           Assert.equal false
             $ arrayHasDuplicates [ 65536, 1, 2, 3 ]
+            
       suite "Exercise - hashHour instance" do
         test "Match" do
           Assert.equal (hash $ Hour 1)
@@ -203,6 +216,7 @@ main =
             $ Assert.equal (hash $ Hour 1)
             $ hash
             $ Hour 14
+             {-  Move this block comment starting point to enable more tests
 
 -}
 runChapterExamples :: TestSuite
