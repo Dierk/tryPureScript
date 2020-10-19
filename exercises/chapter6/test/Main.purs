@@ -10,11 +10,12 @@ import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 import Test.Unit.Main (runTest)
 
+import Test.MySolutions
+
 main :: Effect Unit
 main =
   runTest do
     runChapterExamples
-    {-  Move this block comment starting point to enable more tests
     test "Exercise Group - Show Me" do
       -- Tests for the first exercise in this chapter (Show Shape)
       -- can be found at the end of the previous chapter (chapter 5).
@@ -112,7 +113,6 @@ main =
           $ unsafeMaximum [ 1, 2, 42, 3 ]
       let
         m1 = Multiply 3
-
         m2 = Multiply 4
       suite "Exercise - Action Class - repeatAction instance" do
         -- Getting Multiply Int to work is a warm-up
@@ -203,6 +203,7 @@ main =
             $ Assert.equal (hash $ Hour 1)
             $ hash
             $ Hour 14
+    {-  Move this block comment starting point to enable more tests
 
 -}
 runChapterExamples :: TestSuite
