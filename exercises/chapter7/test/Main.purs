@@ -23,7 +23,7 @@ main :: Effect Unit
 main =
   runTest do
     runChapterExamples
-    {-  Move this block comment starting point to enable more tests
+    
     suite "Exercise Group - Applicative and Effects" do
       suite "Exercise - Numeric operators that work with Maybe" do
         suite "addMaybe" do
@@ -45,6 +45,7 @@ main =
         test "divMaybe" do
           Assert.equal (Just 2)
             $ divMaybe (Just 5) (Just 2)
+            
       suite "Exercise - Numeric operators that work with Apply" do
         suite "addApply" do
           test "Maybe Just" do
@@ -79,7 +80,7 @@ main =
               $ divApply (Just 5) (Just 2)
           test "Either" do
             Assert.equal (Right 2 :: Either String Int)
-              $ divApply (Right 5) (Right 2)
+              $ divApply (Right 5) (Right 2)     
       suite "Exercise - combineMaybe" do
         suite "Array Int" do
           test "Just" do
@@ -94,7 +95,7 @@ main =
               $ combineMaybe (Just $ 'a' : 'b' : 'c' : Nil)
           test "Nothing" do
             Assert.equal (Nothing : Nil)
-              $ combineMaybe (Nothing :: Maybe (List Char))
+              $ combineMaybe (Nothing :: Maybe (List Char))            
     suite "Exercise Group - Applicative Validation" do
       suite "Exercise - stateRegex" do
         let
@@ -106,7 +107,7 @@ main =
         stateTest "Ca" true
         stateTest "C" false
         stateTest "CAA" false
-        stateTest "C3" false
+        stateTest "C3" false   
       suite "Exercise - nonEmptyRegex" do
         let
           nonEmptyTest str exp =
@@ -118,7 +119,7 @@ main =
         nonEmptyTest "Ñóñá" true
         nonEmptyTest "" false
         nonEmptyTest " " false
-        nonEmptyTest "\t" false
+        nonEmptyTest "\t" false     
       suite "Exercise - validateAddressImproved" do
         test "Valid" do
           let
@@ -136,7 +137,7 @@ main =
         test "Invalid State" do
           Assert.equal (invalid [ "Field 'State' did not match the required format" ])
             $ validateAddressImproved
-            $ address "22 Fake St" "Fake City" "C3"
+            $ address "22 Fake St" "Fake City" "C3" 
     suite "Exercise Group - Traversable Functors" do
       suite "Exercise - Tree Show and Eq" do
         let
@@ -161,6 +162,7 @@ main =
             Assert.equal 
               (Branch (Branch (leaf "1") "2" (leaf "3")) "4" (Branch (leaf "5") "6" (leaf "7")))
               $ map show intTree
+              
         suite "Foldable Tree" do
           test "Foldable - foldr" do
             Assert.equal "1234567"
@@ -171,6 +173,7 @@ main =
           test "Foldable - foldMap" do
             Assert.equal "1234567"
               $ foldMap (\x -> show x) intTree
+              
         suite "Maybe side-effect" do
           test "Just - traverse" do
             Assert.equal (Just $ Branch (leaf 1) 2 (leaf 3))
@@ -192,18 +195,21 @@ main =
             $ runWriter
             $ traverse (\x -> tell [ x ])
             $ Branch (Branch (leaf 1) 2 (leaf 3)) 4 (Branch (leaf 5) 6 (leaf 7))
+             
       test "Exercise - traversePreOrder" do
         Assert.equal (1 .. 7)
           $ snd
           $ runWriter
           $ traversePreOrder (\x -> tell [ x ])
           $ Branch (Branch (leaf 3) 2 (leaf 4)) 1 (Branch (leaf 6) 5 (leaf 7))
+          
       test "Exercise - traversePostOrder" do
         Assert.equal (1 .. 7)
           $ snd
           $ runWriter
           $ traversePostOrder (\x -> tell [ x ])
           $ Branch (Branch (leaf 1) 3 (leaf 2)) 7 (Branch (leaf 4) 6 (leaf 5))
+       
       suite "Exercise - validatePersonOptionalAddress" do
         let
           examplePerson =
@@ -227,6 +233,7 @@ main =
           Assert.equal (invalid ([ "Field 'City' cannot be empty" ]))
             $ validatePersonOptionalAddress
             $ examplePerson { homeAddress = (Just $ address "123 Fake St." "" "CA") }
+               
       suite "Exercise - sequenceUsingTraverse" do
         test "Just" do
           Assert.equal (Just [ 1, 2 ])
@@ -241,7 +248,7 @@ main =
         test "Nothing" do
           Assert.equal Nothing
             $ traverseUsingSequence fromNumber [ 1.0, 2.7 ]
-
+{-  Move this block comment starting point to enable more tests
 -}
 runChapterExamples :: TestSuite
 runChapterExamples =

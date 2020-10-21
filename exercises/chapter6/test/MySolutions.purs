@@ -25,18 +25,17 @@ instance eqComplex :: Eq Complex where
 data NonEmpty a = NonEmpty a (Array a)
 
 instance showNonEmpty :: Show a => Show (NonEmpty a) where
-  show (NonEmpty a xs) = show a <> show xs
+  show (NonEmpty a xs) = show a <> " " <> show xs
 -- darstellung fraglich  
 
 instance eqNonEmpty :: Eq a => Eq (NonEmpty a) where
   eq (NonEmpty a xs) (NonEmpty a1 ys) = a == a1 && xs == ys 
 
 instance semigroupNonEmpty :: Semigroup (NonEmpty a) where
-    append (NonEmpty a xs) (NonEmpty a1 ys) = (NonEmpty a (xs <> (a1 : ys)))
+  append (NonEmpty a xs) (NonEmpty a1 ys) = (NonEmpty a (xs <> (a1 : ys)))
 
 instance functorNonEmpty :: Functor NonEmpty where
   map f (NonEmpty a xs) = NonEmpty (f a) (map f xs)
-
 
 instance foldableNonEmpty :: Foldable NonEmpty where
   foldr f b (NonEmpty e xs) = foldr f b ([ e ] <> xs)
@@ -120,6 +119,13 @@ instance showSelf :: Show m => Show (Self m) where
 
 arrayHasDuplicates :: forall a. Hashable a => (Array a) -> Boolean
 arrayHasDuplicates arr = not (hash arr == hash (nubByEq (==) arr))
+-- falsch
+
+arrayHasDuplicates :: forall a. Hashable a => Array a -> Boolean
+arrayHasDuplicates array = nubByEq myCompare array /= array where
+  myCompare x y = if hash x == hash y
+                  then x == y
+                  else false
 
 
 newtype Hour = Hour Int
