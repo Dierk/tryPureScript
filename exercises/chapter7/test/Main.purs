@@ -23,7 +23,6 @@ main :: Effect Unit
 main =
   runTest do
     runChapterExamples
-    {-  Move this block comment starting point to enable more tests
     suite "Exercise Group - Applicative and Effects" do
       suite "Exercise - Numeric operators that work with Maybe" do
         suite "addMaybe" do
@@ -95,6 +94,7 @@ main =
           test "Nothing" do
             Assert.equal (Nothing : Nil)
               $ combineMaybe (Nothing :: Maybe (List Char))
+    {-  Move this block comment starting point to enable more tests
     suite "Exercise Group - Applicative Validation" do
       suite "Exercise - stateRegex" do
         let
