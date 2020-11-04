@@ -1,24 +1,19 @@
 module Test.MySolutions where
 
-import Control.Apply
-import Data.AddressBook
-import Data.AddressBook.Validation
-import Data.Foldable
-import Data.Traversable
-import Prelude
+import Control.Apply (lift2)
+import Data.AddressBook (Address, PhoneNumber, address)
+import Data.AddressBook.Validation (Errors, arrayNonEmpty, matches, nonEmpty, validateAddress, validatePhoneNumber)
+import Data.Traversable (class Foldable, class Traversable, foldMap, foldl, foldr, sequence, traverse)
+import Prelude (class Applicative, class Apply, class Eq, class EuclideanRing, class Functor, class Monoid, class Ring, class Semiring, class Show, apply, identity, map, mempty, pure, show, ($), (&&), (*), (*>), (+), (-), (/), (<$>), (<*>), (<>), (==))
 
-import Data.Array.NonEmpty (findLastIndex)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
-import Data.String.Regex (Regex, test, regex)
+import Data.String.Regex (Regex, regex)
 import Data.String.Regex.Flags (noFlags)
-import Data.Validation.Semigroup (V, unV, invalid)
-import Math (e)
+import Data.Validation.Semigroup (V)
 import Partial.Unsafe (unsafePartial)
 
 -- Note to reader: Add your solutions to this file
-
-
 addMaybe :: Maybe Int -> Maybe Int -> Maybe Int
 addMaybe a b = lift2 (+) a b
 
@@ -44,7 +39,7 @@ divApply :: forall f a. Apply f => EuclideanRing a => f a -> f a -> f a
 divApply = lift2 (/) 
 
 combineMaybe :: forall a f. Applicative f => Maybe (f a) -> f (Maybe a)
-combineMaybe (Nothing) = pure Nothing
+combineMaybe Nothing = pure Nothing
 combineMaybe (Just a) = map Just a
 
 stateRegex :: Regex
@@ -145,12 +140,11 @@ validatePersonOptionalAddress p = ado
   lastName <- (nonEmpty "Last Name" p.lastName *> pure p.lastName)
   address <- (traverse validateAddress p.homeAddress *> pure p.homeAddress)
   numbers <- (arrayNonEmpty "Phone Numbers" p.phones *> traverse validatePhoneNumber p.phones)
-  in personOptionalAddress firstName lastName address numbers
+  in {firstName: firstName, lastName: lastName, homeAddress: address, phones: numbers}
+  --in personOptionalAddress firstName lastName address numbers
 
--- Exercise 6
 sequenceUsingTraverse :: forall a m t. Traversable t => Applicative m => t (m a) -> m (t a)
 sequenceUsingTraverse t = traverse identity t
 
--- Exercise 7
 traverseUsingSequence :: forall a b m t. Traversable t => Applicative m => (a -> m b) -> t a -> m (t b)
 traverseUsingSequence f t = sequence $ map f t
