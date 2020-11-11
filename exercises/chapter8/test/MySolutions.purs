@@ -91,3 +91,5 @@ safeDivide a b = Just (a / b)
 exceptionDivide :: Number -> Number -> Effect Number
 exceptionDivide _ 0.0 = throwException $ error "division by 0"
 exceptionDivide a b = pure (a / b)
+
+
