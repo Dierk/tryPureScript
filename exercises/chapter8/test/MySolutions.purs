@@ -25,7 +25,7 @@ possibleSums ary = sort $ nub $ foldM combine 0 ary where
     combine :: Int -> Int -> Array Int
     combine accu cur = [accu, cur, accu + cur]
 
--- Alternative approach
+-- Alternative approach (concatMap aka flatMap)
 possibleSums' :: Array Int -> Array Int
 possibleSums' ary = sort $ nub $ concat (map combinations ary) where
     combinations x = concat $ map (\y -> [0, x, y, x+y]) ary -- must remove x from ary
@@ -114,4 +114,47 @@ filterM predicateM xs = foldM foo Nil xs where
         if (bool) 
             then pure (snoc accu cur)
             else pure accu
+
+{- Reading notes:
+
+ST = state transition or state thread
+
+In ST new, read, write, modify only 'new' returns an STRef, others return only ST
+   thus keeping the ref inside the thread
+    new     :: forall a r. a                      -> ST r (STRef r a)
+    read    :: forall a r. STRef r a              -> ST r a
+    write   :: forall a r. a -> STRef r a         -> ST r a
+    modify  :: forall r a. (a -> a) -> STRef r a  -> ST r a
+
+  Also nice: dispatching on the return type!
+
+"for" is in the ST effect while Haskell, Frege have it as alias for flip foldM_  
+
+In run :: forall a. (forall r. ST r a) -> a
+r is a higher-rank type. 
+
+Note on generated JS code for "simulate": would be nicer to generate
+const (instead of var) and arrow functions.
+
+-}
+
+-- safeDevide to exceptionDivide
+-- note: why should assertException be a problem? 
+{-
+    assertException callback = do            -- might have type issue here
+      result <- try callback
+      case result of 
+        Left   expectedError -> assert true  
+        Right  _             -> assert false -- maybe better error indication
+-} 
   
+-- ST exercise would most likely depend on some "outer structure" template
+-- where the student must fill in the blanks. Game of life? Ackermann funktion? Turtle graphics?
+-- Alternative: just disallow recursion and folding.  
+
+-- <Address book UI> 
+
+-- putting div in a label ? (formField)
+
+-- (1) which language feature allows the phone "type" introspection?
+
