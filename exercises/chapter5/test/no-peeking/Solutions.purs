@@ -56,7 +56,7 @@ fromSingleton a _ = a
 circleAtOrigin :: Shape
 circleAtOrigin = Circle origin 10.0
 
-centerShape :: Shape -> Shape
+{-centerShape :: Shape -> Shape
 centerShape (Circle c r) = Circle origin r
 centerShape (Rectangle c w h) = Rectangle origin w h
 centerShape (Line (Point s) (Point e)) =
@@ -103,7 +103,8 @@ data ShapeExt
 
 {-
 Your solution should edit `shapeBounds` in `Picture.purs`.
--}
+}
 shapeBounds :: ShapeExt -> Bounds
 shapeBounds (Clipped pic pt w h) = intersect (bounds pic) (DataP.shapeBounds (Rectangle pt w h))
 shapeBounds (Shape shape) = DataP.shapeBounds shape
+-}

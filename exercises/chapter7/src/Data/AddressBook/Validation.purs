@@ -1,7 +1,7 @@
 module Data.AddressBook.Validation where
 
 import Prelude
-import Data.AddressBook (Address, Person, PhoneNumber, address, person, phoneNumber)
+import Data.AddressBook (Address, Person, PhoneNumber, PersonWithOptionalAddress(..), address, person, phoneNumber)
 import Data.Either (Either(..))
 import Data.String (length)
 import Data.String.Regex (Regex, test, regex)
@@ -34,6 +34,14 @@ phoneNumberRegex =
   unsafePartial case regex "^\\d{3}-\\d{3}-\\d{4}$" noFlags of
     Right r -> r
 
+stateRegex :: Regex
+stateRegex = unsafePartial case regex "^[a-zA-Z]{2}$" noFlags of
+  Right r -> r
+
+nonEmptyRegex :: Regex
+nonEmptyRegex = unsafePartial case regex "\\S" noFlags of
+  Right r -> r
+
 matches :: String -> Regex -> String -> V Errors Unit
 matches _ regex value
   | test regex value = pure unit
@@ -45,6 +53,13 @@ validateAddress a =
   address <$> (nonEmpty "Street" a.street *> pure a.street)
     <*> (nonEmpty "City" a.city *> pure a.city)
     <*> (lengthIs "State" 2 a.state *> pure a.state)
+
+validateAddressImproved :: Address -> V Errors Address
+validateAddressImproved a = ado
+  street <- (matches "Street" nonEmptyRegex a.street *> pure a.street)
+  city <- (matches "City" nonEmptyRegex a.city *> pure a.city)
+  state <- (matches "State" stateRegex a.state *> pure a.state)
+  in address street city state
 
 validateAddressAdo :: Address -> V Errors Address
 validateAddressAdo a = ado
@@ -70,6 +85,14 @@ validatePerson p =
     <*> (nonEmpty "Last Name" p.lastName *> pure p.lastName)
     <*> validateAddress p.homeAddress
     <*> (arrayNonEmpty "Phone Numbers" p.phones *> traverse validatePhoneNumber p.phones)
+
+validatePersonOptionalAddress :: PersonWithOptionalAddress -> V Errors PersonWithOptionalAddress
+validatePersonOptionalAddress (PersonWithOptionalAddress p) = ado
+  firstName     <- (matches "First Name" nonEmptyRegex p.firstName *> pure p.firstName)
+  lastName      <- (matches "Last Name" nonEmptyRegex p.lastName *> pure p.lastName)
+  homeAddress   <- traverse validateAddress p.homeAddress *> pure p.homeAddress
+  phones        <- (arrayNonEmpty "Phone Numbers" p.phones *> traverse validatePhoneNumber p.phones)
+  in PersonWithOptionalAddress { firstName: firstName, lastName: lastName, homeAddress: homeAddress, phones: phones }
 
 validatePersonAdo :: Person -> V Errors Person
 validatePersonAdo p = ado

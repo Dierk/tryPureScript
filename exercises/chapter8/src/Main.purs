@@ -1,9 +1,9 @@
 module Main where
 
 import Prelude
-import Data.AddressBook (PhoneNumber, examplePerson)
-import Data.AddressBook.Validation (Errors, validatePerson')
-import Data.Array (mapWithIndex, updateAt)
+import Data.AddressBook (PhoneNumber, PhoneType(..), examplePerson)
+import Data.AddressBook.Validation (Errors, validatePerson', ValidationError(..), Field(..))
+import Data.Array (mapWithIndex, updateAt, filter, concat)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
@@ -27,47 +27,55 @@ renderValidationErrors :: Errors -> Array R.JSX
 renderValidationErrors [] = []
 
 renderValidationErrors xs =
-  let
-    renderError :: String -> R.JSX
-    renderError err = D.li_ [ D.text err ]
-  in
-    [ D.div
-        { className: "alert alert-danger row"
-        , children: [ D.ul_ (map renderError xs) ]
-        }
-    ]
+  [ D.div
+      { className: "col-sm-4"
+      , children: [ D.div_ $ renderError <$> xs ]
+      }
+  ]
+
+renderError :: ValidationError -> R.JSX
+renderError (ValidationError e _) =
+  D.div
+    { className: "alert alert-danger"
+    , children: [ D.text e ]
+    }
+
+extractErrors :: Field -> Errors -> Errors
+extractErrors f = filter \(ValidationError _ f') -> f == f'
 
 -- Helper function to render a single form field with an
 -- event handler to update
-formField :: String -> String -> String -> (String -> Effect Unit) -> R.JSX
-formField name placeholder value setValue =
-  D.label
-    { className: "form-group row"
-    , children:
-        [ D.div
-            { className: "col-sm col-form-label"
-            , children: [ D.text name ]
-            }
-        , D.div
-            { className: "col-sm"
-            , children:
-                [ D.input
-                    { className: "form-control"
-                    , placeholder
-                    , value
-                    , onChange:
-                        let
-                          handleValue :: Maybe String -> Effect Unit
-                          handleValue (Just v) = setValue v
+formField :: Field -> String -> String -> Errors -> (String -> Effect Unit) -> Array R.JSX
+formField field placeholder value errors setValue =
+  [ D.div
+      { className: "form-group row"
+      , children:
+          [ D.label
+              { className: "col-sm-2 col-form-label"
+              , children: [ D.text $ show field ]
+              }
+          , D.div
+              { className: "col-sm-4"
+              , children:
+                  [ D.input
+                      { className: "form-control"
+                      , placeholder
+                      , value
+                      , onChange:
+                          let
+                            handleValue :: Maybe String -> Effect Unit
+                            handleValue (Just v) = setValue v
 
-                          handleValue Nothing = pure unit
-                        in
-                          handler targetValue handleValue
-                    }
-                ]
-            }
-        ]
-    }
+                            handleValue Nothing = pure unit
+                          in
+                            handler targetValue handleValue
+                      }
+                  ]
+              }
+          ]
+            <> renderValidationErrors (extractErrors field errors)
+      }
+  ]
 
 mkAddressBookApp :: Effect (ReactComponent {})
 mkAddressBookApp =
@@ -87,44 +95,55 @@ mkAddressBookApp =
       updateAt' i x xs = fromMaybe xs (updateAt i x xs)
 
       -- helper-function to render a single phone number at a given index
-      renderPhoneNumber :: Int -> PhoneNumber -> R.JSX
+      renderPhoneNumber :: Int -> PhoneNumber -> Array R.JSX
       renderPhoneNumber index phone =
         formField
-          (show phone."type")
+          (PhoneField phone."type")
           "XXX-XXX-XXXX"
           phone.number
+          errors
           (\s -> setPerson _ { phones = updateAt' index phone { number = s } person.phones })
 
       -- helper-function to render all phone numbers
       renderPhoneNumbers :: Array R.JSX
-      renderPhoneNumbers = mapWithIndex renderPhoneNumber person.phones
+      renderPhoneNumbers =
+        let
+          phoneErrors = renderValidationErrors $ extractErrors (PhoneField NoPhone) errors
+        in
+          phoneErrors <> (concat $ mapWithIndex renderPhoneNumber person.phones)
     pure
       $ D.div
           { className: "container"
           , children:
-              renderValidationErrors errors
-                <> [ D.div
-                      { className: "row"
-                      , children:
-                          [ D.form_
-                              $ [ D.h3_ [ D.text "Basic Information" ]
-                                , formField "First Name" "First Name" person.firstName \s ->
-                                    setPerson _ { firstName = s }
-                                , formField "Last Name" "Last Name" person.lastName \s ->
-                                    setPerson _ { lastName = s }
-                                , D.h3_ [ D.text "Address" ]
-                                , formField "Street" "Street" person.homeAddress.street \s ->
-                                    setPerson _ { homeAddress { street = s } }
-                                , formField "City" "City" person.homeAddress.city \s ->
-                                    setPerson _ { homeAddress { city = s } }
-                                , formField "State" "State" person.homeAddress.state \s ->
-                                    setPerson _ { homeAddress { state = s } }
-                                , D.h3_ [ D.text "Contact Information" ]
-                                ]
-                              <> renderPhoneNumbers
-                          ]
-                      }
-                  ]
+              [ D.div
+                  { className: "row"
+                  , children:
+                      [ D.form
+                          { className: "col-md-12"
+                          , children:
+                              [ D.h3_ [ D.text "Basic Information" ] ]
+                                <> ( formField FirstNameField "First Name" person.firstName errors \s ->
+                                      setPerson _ { firstName = s }
+                                  )
+                                <> ( formField LastNameField "Last Name" person.lastName errors \s ->
+                                      setPerson _ { lastName = s }
+                                  )
+                                <> [ D.h3_ [ D.text "Address" ] ]
+                                <> ( formField StreetField "Street" person.homeAddress.street errors \s ->
+                                      setPerson _ { homeAddress { street = s } }
+                                  )
+                                <> ( formField CityField "City" person.homeAddress.city errors \s ->
+                                      setPerson _ { homeAddress { city = s } }
+                                  )
+                                <> ( formField StateField "State" person.homeAddress.state errors \s ->
+                                      setPerson _ { homeAddress { state = s } }
+                                  )
+                                <> [ D.h3_ [ D.text "Contact Information" ] ]
+                                <> renderPhoneNumbers
+                          }
+                      ]
+                  }
+              ]
           }
 
 main :: Effect Unit

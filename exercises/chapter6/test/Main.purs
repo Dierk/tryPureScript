@@ -2,19 +2,19 @@ module Test.Main where
 
 import Prelude
 import Data.Foldable (foldMap, foldl, foldr)
-import Data.Hashable (hash)
+import Data.Hashable (hash, arrayHasDuplicates)
 import Data.List (List(..), (:))
 import Effect (Effect)
 import Partial.Unsafe (unsafePartial)
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 import Test.Unit.Main (runTest)
+import Test.MySolutions
 
 main :: Effect Unit
 main =
   runTest do
     runChapterExamples
-    {-  Move this block comment starting point to enable more tests
     test "Exercise Group - Show Me" do
       -- Tests for the first exercise in this chapter (Show Shape)
       -- can be found at the end of the previous chapter (chapter 5).
@@ -164,7 +164,7 @@ main =
             Assert.equal (act m1 (act m2 a))
               $ act (m1 <> m2) a
           test "Multiply Array String append concrete" do
-            Assert.equal 
+            Assert.equal
               [ "foofoofoofoofoofoofoofoofoofoofoofoo"
               , "barbarbarbarbarbarbarbarbarbarbarbar"
               , "bazbazbazbazbazbazbazbazbazbazbazbaz"
@@ -204,7 +204,6 @@ main =
             $ hash
             $ Hour 14
 
--}
 runChapterExamples :: TestSuite
 runChapterExamples =
   test "Todo for book maintainers - Add tests for chapter examples" do

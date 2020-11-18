@@ -1,6 +1,8 @@
 module Data.AddressBook where
 
 import Prelude
+import Data.Maybe
+import Data.Newtype (class Newtype)
 
 type Address
   = { street :: String
@@ -47,6 +49,25 @@ type Person
     , homeAddress :: Address
     , phones :: Array PhoneNumber
     }
+
+newtype PersonWithOptionalAddress = PersonWithOptionalAddress
+    { firstName :: String
+    , lastName :: String
+    , homeAddress :: Maybe Address
+    , phones :: Array PhoneNumber
+    }
+
+derive instance newtypePersonWithOptionalAddress :: Newtype PersonWithOptionalAddress _
+
+instance personWithOptionalAddressEq :: Eq PersonWithOptionalAddress where
+  eq :: PersonWithOptionalAddress -> PersonWithOptionalAddress -> Boolean
+  eq (PersonWithOptionalAddress p1) (PersonWithOptionalAddress p2) = p1.firstName == p2.firstName &&
+    p1.lastName == p2.lastName && p1.homeAddress == p2.homeAddress && p1.phones == p2.phones
+
+instance personWithOptionalAddressShow :: Show PersonWithOptionalAddress where
+  show :: PersonWithOptionalAddress -> String
+  show (PersonWithOptionalAddress {firstName, lastName}) =
+   firstName <> lastName
 
 person :: String -> String -> Address -> Array PhoneNumber -> Person
 person firstName lastName homeAddress phones = { firstName, lastName, homeAddress, phones }

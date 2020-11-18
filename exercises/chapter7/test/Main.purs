@@ -3,7 +3,9 @@ module Test.Main where
 import Prelude
 import Test.MySolutions
 import Control.Monad.Writer (runWriter, tell)
-import Data.AddressBook (PhoneType(..), address, phoneNumber)
+import Data.AddressBook (PhoneType(..), address, phoneNumber, PersonWithOptionalAddress(..))
+import Data.AddressBook.Validation (stateRegex, nonEmptyRegex, validateAddressImproved, validatePersonOptionalAddress)
+import Data.Newtype(unwrap)
 import Data.Array ((..))
 import Data.Either (Either(..))
 import Data.Foldable (foldl, foldr, foldMap)
@@ -23,7 +25,6 @@ main :: Effect Unit
 main =
   runTest do
     runChapterExamples
-    {-  Move this block comment starting point to enable more tests
     suite "Exercise Group - Applicative and Effects" do
       suite "Exercise - Numeric operators that work with Maybe" do
         suite "addMaybe" do
@@ -158,7 +159,7 @@ main =
       suite "Exercise - traverse" do
         suite "Functor Tree" do
           test "Functor - map" do
-            Assert.equal 
+            Assert.equal
               (Branch (Branch (leaf "1") "2" (leaf "3")) "4" (Branch (leaf "5") "6" (leaf "7")))
               $ map show intTree
         suite "Foldable Tree" do
@@ -206,7 +207,7 @@ main =
           $ Branch (Branch (leaf 1) 3 (leaf 2)) 7 (Branch (leaf 4) 6 (leaf 5))
       suite "Exercise - validatePersonOptionalAddress" do
         let
-          examplePerson =
+          examplePerson = PersonWithOptionalAddress
             { firstName: "John"
             , lastName: "Smith"
             , homeAddress: Just $ address "123 Fake St." "FakeTown" "CA"
@@ -220,13 +221,13 @@ main =
             $ validatePersonOptionalAddress examplePerson
         test "Nothing" do
           let
-            examplePersonNoAddress = examplePerson { homeAddress = Nothing }
+            examplePersonNoAddress = PersonWithOptionalAddress (unwrap examplePerson) { homeAddress = Nothing }
           Assert.equal (pure examplePersonNoAddress)
             $ validatePersonOptionalAddress examplePersonNoAddress
         test "Just Address with empty city" do
           Assert.equal (invalid ([ "Field 'City' cannot be empty" ]))
             $ validatePersonOptionalAddress
-            $ examplePerson { homeAddress = (Just $ address "123 Fake St." "" "CA") }
+            $ PersonWithOptionalAddress (unwrap examplePerson) { homeAddress = (Just $ address "123 Fake St." "" "CA") }
       suite "Exercise - sequenceUsingTraverse" do
         test "Just" do
           Assert.equal (Just [ 1, 2 ])
@@ -242,7 +243,6 @@ main =
           Assert.equal Nothing
             $ traverseUsingSequence fromNumber [ 1.0, 2.7 ]
 
--}
 runChapterExamples :: TestSuite
 runChapterExamples =
   test "Todo for book maintainers - Add tests for chapter examples" do

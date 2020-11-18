@@ -7,7 +7,7 @@ import Data.Array (filter, null)
 import Data.List (List(..), foldM, (:))
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
-import Test.Examples (countThrows, safeDivide)
+import Test.Examples (countThrows, safeDivide, possibleSums)
 import Test.Unit (TestSuite, suite, test)
 import Test.Unit.Assert as Assert
 import Test.Unit.Main (runTest)
@@ -16,7 +16,6 @@ main :: Effect Unit
 main =
   runTest do
     runChapterExamples
-    {-  Move this block comment starting point to enable more tests
     suite "Exercises Group - Monads and Applicatives" do
       suite "third" do
         test "No elements"
@@ -74,7 +73,6 @@ main =
                 onlyPositiveEvenIntegers
                 (2 : 3 : 4 : Nil)
 
--}
 runChapterExamples :: TestSuite
 runChapterExamples =
   -- Testing chapter examples in book - for reader reference only

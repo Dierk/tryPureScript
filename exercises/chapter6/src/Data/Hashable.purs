@@ -5,10 +5,12 @@ module Data.Hashable
   , hash
   , hashEqual
   , combineHashes
+  , arrayHasDuplicates
   ) where
 
 import Prelude
 
+import Data.Array (length, nubByEq)
 import Data.Char (toCharCode)
 import Data.Either (Either(..))
 import Data.Foldable (foldl)
@@ -62,3 +64,19 @@ instance hashTuple :: (Hashable a, Hashable b) => Hashable (Tuple a b) where
 instance hashEither :: (Hashable a, Hashable b) => Hashable (Either a b) where
   hash (Left a) = hashCode 0 `combineHashes` hash a
   hash (Right b) = hashCode 1 `combineHashes` hash b
+
+arrayHasDuplicates :: forall a. Hashable a => Array a -> Boolean
+arrayHasDuplicates xs =
+  let
+    hashAndValueEq :: forall b. Hashable b => b -> b -> Boolean
+    hashAndValueEq = hashEqual && (==)
+  in
+    length xs /= (length $ nubByEq hashAndValueEq xs)
+
+newtype Hour = Hour Int
+
+instance eqHour :: Eq Hour where
+  eq (Hour n) (Hour m) = mod n 12 == mod m 12
+
+instance hashableHour :: Hashable Hour where
+  hash (Hour h) = hash (h `mod` 12)

@@ -1,10 +1,14 @@
 module Data.Picture where
 
+import Data.Maybe
+import Data.Tuple
 import Prelude
 
 import Data.Foldable (foldl)
 import Global as Global
+import Math (pi)
 import Math as Math
+import Test.QuickCheck.Gen (sample)
 
 data Point = Point
   { x :: Number
@@ -20,6 +24,7 @@ data Shape
   | Rectangle Point Number Number
   | Line Point Point
   | Text Point String
+  | Clipped Picture Point Number Number
 
 showShape :: Shape -> String
 showShape (Circle c r) =
@@ -30,6 +35,41 @@ showShape (Line start end) =
   "Line [start: " <> showPoint start <> ", end: " <> showPoint end <> "]"
 showShape (Text loc text) =
   "Text [location: " <> showPoint loc <> ", text: " <> show text <> "]"
+showShape (Clipped _ c w h) = showShape $ Rectangle c w h
+
+circleAtOrigin :: Shape
+circleAtOrigin = Circle origin 10.0
+
+scaleShape :: Number -> Shape -> Shape
+scaleShape i (Circle c r) = Circle c (r * i)
+scaleShape i (Rectangle c w h) = Rectangle c (w * i) (h * i)
+scaleShape i (Line (Point s) (Point e)) =
+  (Line
+    (Point { x: s.x * i, y: s.y * i })
+    (Point { x: e.x * i, y: e.y * i })
+  )
+scaleShape i text = text
+
+centerShape :: Shape -> Shape
+centerShape (Circle c r) = Circle origin r
+centerShape (Rectangle c w h) = Rectangle origin w h
+centerShape (Line (Point s) (Point e)) =
+  (Line
+    (Point { x: -deltaX, y: -deltaY })
+    (Point { x: deltaX, y: deltaY })
+  )
+  where
+  deltaX = (e.x - s.x) / 2.0
+  deltaY = (e.y - s.y) / 2.0
+centerShape (Text loc text) = Text origin text
+centerShape (Clipped _ c w h) = centerShape $ Rectangle c w h
+
+doubleScaleAndCenter :: Shape -> Shape
+doubleScaleAndCenter = centerShape <<< scaleShape 2.0
+
+shapeText :: Shape -> Maybe String
+shapeText (Text _ s) = Just s
+shapeText _          = Nothing
 
 origin :: Point
 origin = Point { x: 0.0, y: 0.0 }
@@ -39,6 +79,12 @@ getCenter (Circle c r) = c
 getCenter (Rectangle c w h) = c
 getCenter (Line (Point s) (Point e)) = Point { x: s.x - e.x, y: s.y - e.y }
 getCenter (Text loc text) = loc
+getCenter (Clipped _ c w h) = getCenter $ Rectangle c w h
+
+area :: Shape -> Number
+area (Circle _ r)      = pi * r * r
+area (Rectangle _ w h) = w * h
+area _                 = 0.0
 
 type Picture = Array Shape
 
@@ -85,6 +131,8 @@ shapeBounds (Text (Point { x, y }) _) = Bounds
   , bottom: y
   , right:  x
   }
+shapeBounds (Clipped p c w h) = intersect (bounds p) (shapeBounds $ Rectangle c w h)
+
 
 union :: Bounds -> Bounds -> Bounds
 union (Bounds b1) (Bounds b2) = Bounds
@@ -142,4 +190,4 @@ instance pointShow :: Show Point where
 derive instance shapeEq :: Eq Shape
 
 instance shapeShow :: Show Shape where
-  show shape = showShape shape
+  show = showShape

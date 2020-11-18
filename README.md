@@ -16,7 +16,7 @@ latest version of the book, community edition: https://book.purescript.org/index
 ```json
 {
   "purescript.addSpagoSources": true,
-  "purescript.addNpmPath": true,
+  "purescript.addNpmPath": true,  
   "purescript.buildCommand": "spago build --purs-args --json-errors"
 }
 ```

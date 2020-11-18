@@ -2,6 +2,7 @@ module Test.Main where
 
 import Prelude
 import Test.MySolutions
+import Data.Person
 
 import Data.Int(round)
 import Data.Maybe(Maybe(Just, Nothing))
@@ -11,6 +12,7 @@ import Effect (Effect)
 import Test.Unit (suite, test)
 import Test.Unit.Assert as Assert
 import Test.Unit.Main (runTest)
+import Data.Picture
 
 john :: Person
 john = { name: "John Smith", address: { street: "123 Test Lane", city: "Los Angeles" } }
@@ -31,7 +33,6 @@ samplePicture =
 main :: Effect Unit
 main =
   runTest do
-    {-  Move this block comment starting point to enable more tests
     suite "Exercise Group - Simple Pattern Matching" do
       test "Exercise - factorial" do
         Assert.equal 1
@@ -120,4 +121,3 @@ main =
           $ shapeBounds (Clipped samplePicture (Point { x: 0.0, y: 0.0 }) 4.0 4.0)
         Assert.equal (Bounds { top: 3.0, left: 3.0, right: 7.0, bottom: 7.0 })
           $ shapeBounds (Clipped samplePicture (Point { x: 5.0, y: 5.0 }) 4.0 4.0)
-    -}

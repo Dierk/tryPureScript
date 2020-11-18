@@ -126,7 +126,7 @@ allSizes paths =
         Nothing -> Tuple (filename p) 0
     )
     paths
-
+    
 whereIs :: String -> Maybe String
 whereIs fileName = head $ whereIs' $ allFiles root
   where

@@ -10,3 +10,4 @@
 /.pulp-cache
 /.envrc
 /.psc-ide-port
+package-lock.json
