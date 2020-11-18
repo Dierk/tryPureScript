@@ -84,7 +84,7 @@ validatePerson p =
   person <$> (nonEmpty FirstNameField p.firstName *> pure p.firstName)
     <*> (nonEmpty LastNameField p.lastName *> pure p.lastName)
     <*> validateAddress p.homeAddress
-    <*> (arrayNonEmpty (PhoneField HomePhone) p.phones *> traverse validatePhoneNumber p.phones)
+    <*> (arrayNonEmpty (PhoneField NoPhone) p.phones *> traverse validatePhoneNumber p.phones)
 
 validatePerson' :: Person -> Either Errors Person
 validatePerson' p = unV Left Right $ validatePerson p

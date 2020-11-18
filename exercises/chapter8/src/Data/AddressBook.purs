@@ -16,12 +16,14 @@ data PhoneType
   | WorkPhone
   | CellPhone
   | OtherPhone
+  | NoPhone
 
 instance showPhoneType :: Show PhoneType where
   show HomePhone = "HomePhone"
   show WorkPhone = "WorkPhone"
   show CellPhone = "CellPhone"
   show OtherPhone = "OtherPhone"
+  show NoPhone = "NoPhone"
 
 instance eqPhoneType :: Eq PhoneType where
   eq :: PhoneType -> PhoneType -> Boolean
@@ -29,6 +31,7 @@ instance eqPhoneType :: Eq PhoneType where
   eq WorkPhone WorkPhone = true
   eq CellPhone CellPhone = true
   eq OtherPhone OtherPhone = true
+  eq NoPhone NoPhone = true
   eq _ _ = false
 
 type PhoneNumber
@@ -56,7 +59,5 @@ examplePerson :: Person
 examplePerson =
   person "John" "Smith"
     (address "123 Fake St." "FakeTown" "CA")
-    [ phoneNumber HomePhone "555-555-5555"
-    , phoneNumber CellPhone "555-555-0000"
-    , phoneNumber WorkPhone "555-555-5511"  
+    [  
     ]

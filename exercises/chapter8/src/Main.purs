@@ -2,7 +2,7 @@ module Main where
 
 import Prelude
 
-import Data.AddressBook (PhoneNumber, examplePerson)
+import Data.AddressBook (PhoneNumber, PhoneType(..), examplePerson)
 import Data.AddressBook.Validation (Errors, Field(..), ValidationError(..), validatePerson')
 import Data.Array (mapWithIndex, updateAt, filter, concat)
 import Data.Either (Either(..))
@@ -107,8 +107,8 @@ mkAddressBookApp =
           (\s -> setPerson _ { phones = updateAt' index phone { number = s } person.phones })
 
       -- helper-function to render all phone numbers
-      renderPhoneNumbers :: Array R.JSX
-      renderPhoneNumbers = concat (mapWithIndex renderPhoneNumber person.phones)
+      renderPhoneNumbers ::  Array R.JSX
+      renderPhoneNumbers = (renderValidationErrors (getErrors (PhoneField NoPhone) errors)) <> (concat (mapWithIndex renderPhoneNumber person.phones))
 
     pure
       $ D.div
@@ -133,7 +133,7 @@ mkAddressBookApp =
                           <> (formField StateField "State" person.homeAddress.state errors \s ->
                               setPerson _ { homeAddress { state = s } })
                           <> [ D.h3_ [ D.text "Contact Information" ]]
-                          <> renderPhoneNumbers 
+                          <> renderPhoneNumbers
                       }
                     ]
                 }
