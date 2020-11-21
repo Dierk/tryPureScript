@@ -29,3 +29,10 @@ copyFile file1 file2 = do
   my_data <- readTextFile UTF8 file1
   writeTextFile UTF8 file2 my_data
 
+concatenateFiles :: FilePath -> FilePath -> FilePath -> Aff Unit
+concatenateFiles file1 file2 resultFile= do
+  my_data1 <- readTextFile UTF8 file1
+  my_data2 <- readTextFile UTF8 file2
+  writeTextFile UTF8 resultFile (my_data1 <> my_data2) -- well, appending would be more efficient
+ 
+
