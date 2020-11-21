@@ -4,10 +4,10 @@ import Prelude
 import Test.MySolutions
 
 import Data.Either (Either(..), either)
+import Data.Array (foldM, reverse)
 import Effect (Effect)
 import Effect.Aff (Aff, attempt, message, runAff_)
 import Effect.Class.Console (log)
-import Web.File.FileReader (result)
 
 
 testCopy :: Aff Unit
@@ -29,17 +29,26 @@ runAffTest affTest continuation = flip runAff_ affTest $ either
   (log <<< message) 
   (\_ -> continuation)
 
-foldM :: forall a. (Effect Unit -> Aff a -> Effect Unit) -> Unit -> Array (Aff a) -> Effect (Effect Unit)
+-- foldM :: forall a. 
+--  (Effect Unit -> Aff a -> Effect (Effect Unit)) -> 
+--  (Effect Unit) -> 
+--  Array (Aff a) -> 
+--  Effect (Effect Unit)
 
-runInSequence affTests = do 
-  result <- foldM ( \effect affTest -> runAffTest affTest effect) unit affTests
-  bare   <- result
-  pure bare
+--- Let the async effects run async but in sequence
+runInSequence :: forall a. Array (Aff a) -> Effect Unit
+runInSequence affTests = 
+  join $ foldM (\effect affTest -> pure $ runAffTest affTest effect ) 
+            (pure unit) 
+            (reverse affTests)
 
 main :: Effect Unit
 main = do
-  runInSequence [testCopy, (log "done")]
-  --runAffTest testCopy $
-    --runAffTest testConcatenate $
-      --log "done"
+  -- note that log works for _all_ Monadic Effects, i.e. also "Aff"
+  runInSequence [log "start", testCopy, testConcatenate, log "done"]
+  log "end" -- note that this may be seen before "done"
+  -- was:   
+  -- runAffTest testCopy $
+    -- runAffTest testConcatenate $
+      -- log "done"
 
