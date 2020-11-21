@@ -158,3 +158,19 @@ const (instead of var) and arrow functions.
 
 -- (1) which language feature allows the phone "type" introspection?
 
+{-
+    Making field validation errors local to a field requires a field abstraction like
+
+    data Field = FirstNameField
+               | LastNameField
+               | StreetField
+               | CityField
+               | StateField
+               | PhoneField PhoneType
+
+    but this is kind of the wrong abstraction as it is prone to massive duplication.
+    We rather need a presentation model made from rich attributes that capture observable props like
+    validation, errors, value, mandatory, dirty, placeholder, etc.
+    => rich functional UIs
+-}
+
