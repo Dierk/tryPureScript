@@ -15,6 +15,7 @@ You can edit this file as you like.
   , "psci-support"
   , "random"
   , "refs"
+  , "stringutils"
   , "web-dom"
   ]
 , packages = ./packages.dhall

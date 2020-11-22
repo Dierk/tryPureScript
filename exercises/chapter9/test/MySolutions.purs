@@ -2,21 +2,23 @@ module Test.MySolutions where
 
 import Prelude
 
-import Data.Maybe (Maybe(..))
-import Data.Either (Either(..))
-import Data.String.CodeUnits (length)
-import Data.Traversable (traverse)
-import Data.Foldable (foldr)
-import Effect.Aff (Aff, attempt, message, Milliseconds(..), delay)
-import Effect.Class.Console (log)
-import Effect.Exception (Error)
-import Node.Encoding (Encoding(..))
-import Node.FS.Aff (readTextFile, writeTextFile)
-import Node.Path (FilePath)
-import Control.Parallel (parTraverse, parOneOf)
-
 import Affjax as AX
 import Affjax.ResponseFormat as ResponseFormat
+import Control.Parallel (parTraverse, parOneOf)
+import Data.Array (concat, elem, filter, foldM)
+import Data.Either (Either(..), either)
+import Data.Foldable (foldr)
+import Data.Maybe (Maybe(..))
+import Data.String.CodeUnits (length)
+import Data.String.Utils (lines)
+import Data.Traversable (traverse)
+import Effect (Effect)
+import Effect.Aff (Aff, attempt, message, Milliseconds(..), delay, runAff_)
+import Effect.Class.Console (log, logShow)
+import Effect.Exception (Error, throwException)
+import Node.Encoding (Encoding(..))
+import Node.FS.Aff (readTextFile, writeTextFile)
+import Node.Path (FilePath, dirname, sep)
 
 
 {-
@@ -83,6 +85,8 @@ getUrl url = do
 -- end of copy
 
 {-
+    At this point one has to scan through pursuit for possible candidate functions.
+
     parOneOf :: forall a t m f. Parallel f m => Alternative f => Foldable t => Functor t => t (m a) -> m a
 
     parOneOf :: forall f. Parallel f Aff => Alternative f => Array (Aff (Maybe String)) -> Aff (Maybe String)
@@ -99,9 +103,28 @@ myGetUrl url = do
   pure $ Just content
 
 getWithTimeout :: Number -> String -> Aff (Maybe String)
-getWithTimeout ms url = do
+getWithTimeout ms url = 
   parOneOf [ myDelay ms, myGetUrl url ]
 
--- parOneOf
---    delay ms
---    get url
+-- well, we cannot read files without being at least an Effect (or Aff)
+
+lineContent :: FilePath -> Aff (Array String)
+lineContent file = do
+  -- log file
+  contents <- readTextFile UTF8 file
+  pure $ filter (_ /= "") (lines contents)
+
+combine :: Array FilePath -> FilePath -> Aff (Array FilePath)
+combine filesAcc file = 
+    if file `elem` filesAcc -- guard against endless recursion
+    then 
+        pure filesAcc 
+    else do
+        lines    <- lineContent file
+        recursed <- recurseFiles $ map (\line -> dirname file <> sep <> line) lines 
+        pure (filesAcc <> [file] <> recursed) 
+
+recurseFiles :: (Array FilePath) -> Aff (Array FilePath)
+recurseFiles files = 
+  map concat $ parTraverse (\file -> foldM combine [] [file]) files
+   

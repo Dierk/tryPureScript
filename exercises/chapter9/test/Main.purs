@@ -3,12 +3,12 @@ module Test.Main where
 import Prelude
 import Test.MySolutions
 
-import Data.Maybe (Maybe(..))
-import Data.Either (Either(..), either)
 import Data.Array (foldM, reverse)
+import Data.Either (Either(..), either)
+import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Aff (Aff, attempt, message, runAff_)
-import Effect.Class.Console (log)
+import Effect.Class.Console (log, logShow)
 
 
 testCountCharacters :: Aff Unit
@@ -85,6 +85,7 @@ main = do
     testGetWithTimeout,
     log "async end"
     ]
+  flip runAff_ (recurseFiles ["test/root.txt"]) (either (log <<< message) (\result -> logShow result)) 
   log "sync end" -- note that this may be seen before "async end"
   -- was:   
   -- runAffTest testCopy $
