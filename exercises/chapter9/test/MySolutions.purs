@@ -6,13 +6,17 @@ import Data.Either (Either(..))
 import Data.String.CodeUnits (length)
 import Data.Traversable (traverse)
 import Data.Foldable (foldr)
-import Effect.Aff (Aff, attempt, message)
+import Effect.Aff (Aff, attempt, message, Milliseconds(..), delay)
 import Effect.Class.Console (log)
 import Effect.Exception (Error)
 import Node.Encoding (Encoding(..))
 import Node.FS.Aff (readTextFile, writeTextFile)
 import Node.Path (FilePath)
 import Control.Parallel (parTraverse)
+
+import Affjax as AX
+import Affjax.ResponseFormat as ResponseFormat
+
 
 {-
   This is so typical: once we run in the browser, the code is no longer tested :-(((
@@ -68,3 +72,40 @@ concatenateManyParallel files resultFile = do
     writeTextFile UTF8 resultFile (foldr (<>) "" contents)
     pure unit
 
+-- copied from book
+getUrl :: String -> Aff String
+getUrl url = do
+  result <- AX.get ResponseFormat.string url
+  pure $ case result of
+    Left err -> "GET /api response failed to decode: " <> AX.printError err
+    Right response -> response.body
+
+
+
+delayArray :: Array (Aff Unit)
+delayArray = replicate 100 $ delay $ Milliseconds 10.0    
+-- end of copy
+
+{-
+    parOneOf :: forall a t m f. Parallel f m => Alternative f => Foldable t => Functor t => t (m a) -> m a
+
+    parOneOf :: forall f. Parallel f Aff => Alternative f => Array (Aff (Maybe String)) -> Aff (Maybe String)
+-}
+
+myDelay :: Number -> Aff (Maybe String)
+myDelay ms = do
+  _ <- delay (Milliseconds ms)
+  pure Nothing
+
+myGetUrl :: String -> Aff (Maybe String)  
+myGetUrl url = do
+  content <- getUrl url
+  pure $ Just content
+
+getWithTimeout :: Number -> String -> Aff (Maybe String)
+getWithTimeout ms url = do
+  parOneOf [ myDelay ms, myGetUrl url ]
+
+-- parOneOf
+--    delay ms
+--    get url
