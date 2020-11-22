@@ -37,6 +37,13 @@ testConcatenateMany = do
   result <- attempt $ concatenateMany ["test/file1.txt", "test/file2.txt", "test/file3.txt"] "test/file4.txt"
   case result of
     Left e -> log $ "There was a problem with concatenateMany: " <> message e
+    _ -> pure unit 
+
+testConcatenateManyParallel :: Aff Unit
+testConcatenateManyParallel = do
+  result <- attempt $ concatenateManyParallel ["test/file1.txt", "test/file2.txt", "test/file3.txt"] "test/file5.txt"
+  case result of
+    Left e -> log $ "There was a problem with concatenateManyParallel: " <> message e
     _ -> pure unit    
 
 runAffTest :: forall a. Aff a -> Effect Unit -> Effect Unit
@@ -66,6 +73,7 @@ main = do
     testCopy, 
     testConcatenate, 
     testConcatenateMany,
+    testConcatenateManyParallel,
     log "async end"
     ]
   log "sync end" -- note that this may be seen before "async end"

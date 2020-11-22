@@ -5,12 +5,14 @@ import Prelude
 import Data.Either (Either(..))
 import Data.String.CodeUnits (length)
 import Data.Traversable (traverse)
+import Data.Foldable (foldr)
 import Effect.Aff (Aff, attempt, message)
 import Effect.Class.Console (log)
 import Effect.Exception (Error)
 import Node.Encoding (Encoding(..))
 import Node.FS.Aff (readTextFile, writeTextFile)
 import Node.Path (FilePath)
+import Control.Parallel (parTraverse)
 
 {-
   This is so typical: once we run in the browser, the code is no longer tested :-(((
@@ -54,6 +56,15 @@ countCharacters :: FilePath -> Aff (Either Error Int)
 countCharacters file =
   map (map length) (attempt $ readTextFile UTF8 file)
 
+{-
+    Notes: Aff monadic bind ensures sequence
 
+    "parallel" != "concurrent"                 
+-}
 
+concatenateManyParallel :: Array FilePath -> FilePath -> Aff Unit
+concatenateManyParallel files resultFile = do
+    contents <- parTraverse (\file -> readTextFile UTF8 file) files
+    writeTextFile UTF8 resultFile (foldr (<>) "" contents)
+    pure unit
 
