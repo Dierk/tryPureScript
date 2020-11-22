@@ -3,6 +3,7 @@ module Test.Main where
 import Prelude
 import Test.MySolutions
 
+import Data.Maybe (Maybe(..))
 import Data.Either (Either(..), either)
 import Data.Array (foldM, reverse)
 import Effect (Effect)
@@ -46,6 +47,13 @@ testConcatenateManyParallel = do
     Left e -> log $ "There was a problem with concatenateManyParallel: " <> message e
     _ -> pure unit    
 
+testGetWithTimeout :: Aff Unit
+testGetWithTimeout = do
+  result <- getWithTimeout 10.0 "http://www.fhnw.ch"
+  case result of 
+    Nothing -> log "could not fetch url in time"
+    Just c  -> log c       
+
 runAffTest :: forall a. Aff a -> Effect Unit -> Effect Unit
 runAffTest affTest continuation = flip runAff_ affTest $ either 
   (log <<< message) 
@@ -74,6 +82,7 @@ main = do
     testConcatenate, 
     testConcatenateMany,
     testConcatenateManyParallel,
+    testGetWithTimeout,
     log "async end"
     ]
   log "sync end" -- note that this may be seen before "async end"

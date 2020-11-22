@@ -2,6 +2,7 @@ module Test.MySolutions where
 
 import Prelude
 
+import Data.Maybe (Maybe(..))
 import Data.Either (Either(..))
 import Data.String.CodeUnits (length)
 import Data.Traversable (traverse)
@@ -12,7 +13,7 @@ import Effect.Exception (Error)
 import Node.Encoding (Encoding(..))
 import Node.FS.Aff (readTextFile, writeTextFile)
 import Node.Path (FilePath)
-import Control.Parallel (parTraverse)
+import Control.Parallel (parTraverse, parOneOf)
 
 import Affjax as AX
 import Affjax.ResponseFormat as ResponseFormat
@@ -78,12 +79,7 @@ getUrl url = do
   result <- AX.get ResponseFormat.string url
   pure $ case result of
     Left err -> "GET /api response failed to decode: " <> AX.printError err
-    Right response -> response.body
-
-
-
-delayArray :: Array (Aff Unit)
-delayArray = replicate 100 $ delay $ Milliseconds 10.0    
+    Right response -> response.body   
 -- end of copy
 
 {-
