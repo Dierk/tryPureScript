@@ -10,6 +10,13 @@ import Effect.Aff (Aff, attempt, message, runAff_)
 import Effect.Class.Console (log)
 
 
+testCountCharacters :: Aff Unit
+testCountCharacters = do
+  result <- countCharacters "test/file1.txt" 
+  case result of
+    Left e      -> log $ "There was a problem with countCharacters: " <> message e
+    Right count -> log $ "character count in file1: " <> show count
+
 testCopy :: Aff Unit
 testCopy = do
   result <- attempt $ copyFile "test/file1.txt" "test/file2.txt"
@@ -23,6 +30,14 @@ testConcatenate = do
   case result of
     Left e -> log $ "There was a problem with concatenateFiles: " <> message e
     _ -> pure unit
+
+
+testConcatenateMany :: Aff Unit
+testConcatenateMany = do
+  result <- attempt $ concatenateMany ["test/file1.txt", "test/file2.txt", "test/file3.txt"] "test/file4.txt"
+  case result of
+    Left e -> log $ "There was a problem with concatenateMany: " <> message e
+    _ -> pure unit    
 
 runAffTest :: forall a. Aff a -> Effect Unit -> Effect Unit
 runAffTest affTest continuation = flip runAff_ affTest $ either 
@@ -45,8 +60,15 @@ runInSequence affTests =
 main :: Effect Unit
 main = do
   -- note that log works for _all_ Monadic Effects, i.e. also "Aff"
-  runInSequence [log "start", testCopy, testConcatenate, log "done"]
-  log "end" -- note that this may be seen before "done"
+  runInSequence [
+    log "async start", 
+    testCountCharacters,
+    testCopy, 
+    testConcatenate, 
+    testConcatenateMany,
+    log "async end"
+    ]
+  log "sync end" -- note that this may be seen before "async end"
   -- was:   
   -- runAffTest testCopy $
     -- runAffTest testConcatenate $
