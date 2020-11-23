@@ -6,9 +6,11 @@ import Test.MySolutions
 import Data.Array (foldM, reverse)
 import Data.Either (Either(..), either)
 import Data.Maybe (Maybe(..))
+import Data.Traversable (sequence_)
 import Effect (Effect)
-import Effect.Aff (Aff, attempt, message, runAff_)
+import Effect.Aff (Aff, attempt, message, runAff_, launchAff_)
 import Effect.Class.Console (log, logShow)
+import Node.FS.Aff (unlink)
 
 
 testCountCharacters :: Aff Unit
@@ -72,11 +74,12 @@ runInSequence affTests =
             (pure unit) 
             (reverse affTests)
 
-main :: Effect Unit
-main = do
+main' :: Effect Unit
+main' = do
   -- note that log works for _all_ Monadic Effects, i.e. also "Aff"
   runInSequence [
     log "async start", 
+    sequence_ $ map (\n -> unlink $ "test/file"<> show n <> ".txt") [2,3,4,5] ,
     testCountCharacters,
     testCopy, 
     testConcatenate, 
@@ -92,3 +95,17 @@ main = do
     -- runAffTest testConcatenate $
       -- log "done"
 
+-- just make everything async and rely on the fact that Aff bind ensures proper sequence
+main :: Effect Unit
+main = launchAff_ do
+    log "async start"
+    sequence_ $ map (\n -> unlink $ "test/file"<> show n <> ".txt") [2,3,4,5] 
+    testCountCharacters
+    testCopy
+    testConcatenate
+    testConcatenateMany
+    testConcatenateManyParallel
+    testGetWithTimeout
+    recurseFiles ["test/root.txt"] >>= logShow
+    log "async end"
+    
