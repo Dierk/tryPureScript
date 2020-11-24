@@ -8,4 +8,5 @@
 /.spago
 /.vscode
 /.pulp-cache
+.psc-ide-port
 
