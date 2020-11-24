@@ -2,7 +2,6 @@ module Test.Main where
 
 import Prelude
 import Test.MySolutions
-import Test.NoPeeking.Solutions  -- Note to reader: Delete this line
 
 import Data.Array ((..))
 import Data.Bifunctor (lmap)
@@ -51,8 +50,8 @@ main =
       files <- readdir outDir
       for_ files \f -> unlink $ Path.concat [ outDir, f ]
     runChapterExamples
-    {-  Move this block comment starting point to enable more tests
-Note to reader: Delete this line to expand comment block -}
+   
+
     test "concatenateFiles" do
       let
         inFoo = Path.concat [ inDir, "foo.txt" ]
@@ -65,7 +64,7 @@ Note to reader: Delete this line to expand comment block -}
       inFooTxt <- readTextFile UTF8 inFoo
       inBarTxt <- readTextFile UTF8 inBar
       outFooBarTxt <- readTextFile UTF8 outFooBar
-      Assert.equal (inFooTxt <> inBarTxt) outFooBarTxt
+      Assert.equal (inFooTxt <> inBarTxt) outFooBarTxt    
     test "concatenateMany" do
       let
         inFiles = map (\i -> Path.concat [ inDir, "many", "file" <> show i <> ".txt" ]) $ 1 .. 9
@@ -85,7 +84,7 @@ Note to reader: Delete this line to expand comment block -}
       test "missing" do
         absolutePath <- realpath $ Path.concat [ inDir ]
         chars <- countCharacters $ Path.concat [ absolutePath, "foof.txt" ]
-        Assert.equal (Left ("ENOENT: no such file or directory, open '" <> absolutePath <> "/foof.txt'")) $ lmap message chars
+        Assert.equal (Left ("ENOENT: no such file or directory, open '" <> absolutePath <> "\\foof.txt'")) $ lmap message chars  
     test "writeGet" do
       let
         outFile = Path.concat [ outDir, "user.txt" ]
@@ -117,7 +116,7 @@ Note to reader: Delete this line to expand comment block -}
         Assert.equal expected actual
       test "no response" do
         actual <- getWithTimeout 10.0 "https://example.com:81"
-        Assert.equal Nothing actual
+        Assert.equal Nothing actual     
     suite "recurseFiles" do
       let
         recurseDir = Path.concat [ inDir, "tree" ]
@@ -136,8 +135,7 @@ Note to reader: Delete this line to expand comment block -}
           expected = [ file ]
         actual <- recurseFiles file
         Assert.equal (Set.fromFoldable expected) $ Set.fromFoldable actual
-
-{- Note to reader: Delete this line to expand comment block
+         {-  Move this block comment starting point to enable more tests
 -}
 runChapterExamples :: TestSuite
 runChapterExamples = do
