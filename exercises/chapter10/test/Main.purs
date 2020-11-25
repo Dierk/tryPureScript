@@ -2,7 +2,7 @@ module Test.Main where
 
 import Prelude
 import Test.Examples
-import Test.Solutions
+import Test.MySolutions
 import Control.Monad.Free (Free)
 import Data.Argonaut (decodeJson, encodeJson)
 import Data.Either (Either(..), isLeft)
@@ -24,6 +24,7 @@ main :: Effect Unit
 main =
   runTest do
     runChapterExamples
+  
     suite "Exercise Group - Calling JavaScript" do
       suite "Exercise - volumeFn" do
         test "1 2 3" do
@@ -198,8 +199,10 @@ main =
           let
             (decoded :: Either _ IntOrString) = decodeJson $ encodeJson 1.5
           Assert.assert "Got a Right, should be Left" $ isLeft decoded
-
+                    
 {-  Move this block comment starting point to enable more tests
+
+
 -}
 -- Put in ascending order by real, then imag components
 orderCpx :: Pair Complex -> Pair Complex

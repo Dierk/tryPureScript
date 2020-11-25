@@ -23,7 +23,6 @@ concatenateFiles file1 file2 outFile = do
   my_data2 <- readTextFile UTF8 file2
   writeTextFile UTF8 outFile (my_data1 <> my_data2)
 
-
 concatenateMany :: Array FilePath -> FilePath -> Aff Unit
 concatenateMany arr outFile = do
   res <- traverse (\file -> readTextFile UTF8 file) arr
@@ -33,7 +32,6 @@ countCharacters :: FilePath -> Aff (Either Error Int)
 countCharacters file = attempt do
   contents <- readTextFile UTF8 file
   pure $ length contents
-
 
 writeGet :: String -> FilePath -> Aff Unit
 writeGet url outFile = do
