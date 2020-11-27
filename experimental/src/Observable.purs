@@ -4,65 +4,45 @@ import Prelude
 
 import Control.Monad.ST (ST, run)
 import Control.Monad.ST.Ref (STRef, modify, new, read, write)
-import Data.Array (length)
+import Data.Array (snoc)
 import Data.Foldable (sequence_)
 import Effect (Effect)
 import Effect.Console (logShow)
+import Web.DOM.MutationObserver (observe)
+
+
+type ValueChangeListener a = ( a -> Effect Unit)
 
 type Observable a = {
-    value :: a,
-    effects :: Array (Effect Unit)
+    value     :: a,
+    listeners :: Array (ValueChangeListener a)
 }
-type ObservableRef r a = STRef r (Observable a)
-type ObservableST  r a = ST r (Observable a)
+ 
+newObservable :: forall a. a -> Observable a
+newObservable val = {value: val, listeners: []}
 
-newObservable :: forall a r. a ->  ST r (ObservableRef r a)  
-newObservable val =  new { value : val, effects : [] }
+getValue :: forall a. Observable a -> a 
+getValue obs = obs.value
 
-wrapObservable :: forall a r. Observable a -> ST r (ObservableRef r a)
-wrapObservable obs = new obs
+setValue :: forall a. a -> Observable a -> Effect (Observable a) 
+setValue newValue obs = do
+    sequence_ $ map (\listener -> listener newValue) obs.listeners 
+    pure obs {value = newValue}
 
-getObservable :: forall a r. ObservableRef r a -> ObservableST r a
-getObservable obsRef = read obsRef
+onChange :: forall a. ValueChangeListener a -> Observable a -> Observable a 
+onChange listener obs = obs {listeners = snoc obs.listeners listener}
 
-withObservable :: forall a. 
-    Observable a -> 
-    (a -> a) ->
-    -- the below would be nicer but then, "r" escapes its scope
-    -- (forall r. (ObservableRef r a) -> ST r (ObservableRef r a)) ->
-    Effect (Observable a)
-withObservable obs modify = 
-    let
-        newObs = run ( wrapObservable obs >>= setValue (modify obs.value) >>= getObservable )
-    in do
-        sequence_ newObs.effects
-        pure $ newObs {effects = []}
+-- ----------------- convenience Effect wrapper ------------------------
 
-    
+newObservable' :: forall a. a -> Effect (Observable a)
+newObservable' val = pure $ newObservable val
 
-getValue :: forall a r. ObservableRef r a -> ST  r a
-getValue obsRef = do
-    obs    <- read obsRef
-    pure   obs.value
-    
-getEffects :: forall a r. ObservableRef r a -> ST r (Array (Effect Unit))
-getEffects obsRef = do
-    obs    <- read obsRef
-    pure   obs.effects    
+onChange' :: forall a. ValueChangeListener a -> Observable a -> Effect(Observable a) 
+onChange' li obs = pure $ onChange li obs
 
-setValue :: forall a r. a -> ObservableRef r a -> ST r (ObservableRef r a) 
-setValue val obsRef = do 
-    _ <- modify (\old -> {value: val, effects: old.effects <> [logShow $ "*** "<> show (length old.effects)]}) obsRef
-    pure obsRef
+done :: forall a. Observable a -> Effect Unit
+done _ = pure unit
 
-{- ST functions
-new    :: forall a r. a                      -> ST r (STRef r a)
-read   :: forall a r. STRef r a              -> ST r a
-write  :: forall a r. a         -> STRef r a -> ST r a
-modify :: forall r a. (a -> a)  -> STRef r a -> ST r a
-run    :: forall a. (forall r. ST r a) -> a
-
--}
 
 {- considerations
    - make Observables an Effect and all operations effectful

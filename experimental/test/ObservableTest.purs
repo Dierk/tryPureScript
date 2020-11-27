@@ -1,38 +1,38 @@
 module Test.ObservableTest where
 
 
-import Prelude
 import Data.Traversable
+import Prelude
+
 import Control.Monad.ST (run)
 import Effect (Effect)
-import Observable (getObservable, getEffects, getValue, newObservable, setValue, withObservable)
-import Test.Assert (assertEqual')
 import Effect.Console (logShow)
-          
-
-observedSetValue x = 
-    let 
-        obs = run (newObservable 0 >>= setValue x >>= getObservable)
-    in do
-        logShow $ obs.value              
-    
+import Observable 
+import Test.Assert (assertEqual')
 
 main :: Effect Unit
 main = do    
     assertEqual' "initial value can be read" { 
         expected: 0, 
-        actual: run (newObservable 0 >>= getValue)
+        actual: getValue $ newObservable 0
         } 
         
+    plainObs <- setValue 1 $ newObservable 0    
     assertEqual' "changed value can be read" { 
         expected: 1, 
-        actual: run (newObservable 0 >>= setValue 1 >>= getValue)
+        actual: getValue plainObs 
         }
-    sequence_ $ run (newObservable 0 >>= setValue 1 >>= getEffects)
+    logShow "this should log 1 and 2"
+    oneObs <- setValue 1 $ onChange logShow (newObservable 0) 
+    twoObs <- setValue 2 oneObs  
 
-    observedSetValue 1
+    logShow "this should log 1 and 2 (again, arguably nicer)"
+    newObservable' 0
+        >>= onChange' logShow
+        >>= setValue 1
+        >>= setValue 2
+        >>= done
 
-    xxx <- withObservable {value:42, effects:[]} \x -> x+1
-    yyy <- withObservable xxx                    \x -> x+1
+    pure unit 
 
-    pure unit
+
