@@ -1,25 +1,30 @@
 module Observable where
 
 import Prelude
-import Effect(Effect)
 
-import Control.Monad.ST.Ref (STRef, modify, new, read)
-import Control.Monad.ST (ST, for, run)
+import Control.Monad.ST (ST)
+import Control.Monad.ST.Ref (STRef, write, new, read)
+import Effect (Effect)
 
 type Observable a = {
     value :: a
 }
 type ObservableRef r a = STRef r (Observable a)
+type ObservableST  r a = ST r (Observable a)
+
 
 newObservable :: forall a r. a ->  ST r (ObservableRef r a)  
 newObservable val =  new { value : val }
 
-getValue :: forall a r. ST r (ObservableRef r a) -> ST r a
-getValue observable = do
-    obsRef <- observable 
+getValue :: forall a r. ObservableRef r a -> ST  r a
+getValue obsRef = do
     obs    <- read obsRef
     pure   obs.value
 
+setValue :: forall a r. a -> STRef r (Observable a) -> ST r (ObservableRef r a) 
+setValue val obsRef = do 
+    _ <- write {value: val} obsRef
+    pure obsRef
 
 {- ST functions
 new    :: forall a r. a                      -> ST r (STRef r a)
