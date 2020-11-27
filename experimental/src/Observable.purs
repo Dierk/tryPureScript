@@ -18,10 +18,11 @@ type ObservableST  r a = ST r (Observable a)
 newObservable :: forall a r. a ->  ST r (ObservableRef r a)  
 newObservable val =  new { value : val, effects : [] }
 
+getObservable :: forall a r. ObservableRef r a -> ObservableST r a
+getObservable obsRef = read obsRef
+
 getValue :: forall a r. ObservableRef r a -> ST  r a
-getValue obsRef = do
-    obs    <- read obsRef
-    pure   obs.value
+getValue obsRef = getObservable obsRef >>= _.value
     
 getEffects :: forall a r. ObservableRef r a -> ST r (Array (Effect Unit))
 getEffects obsRef = do
