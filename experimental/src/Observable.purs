@@ -3,27 +3,34 @@ module Observable where
 import Prelude
 
 import Control.Monad.ST (ST)
-import Control.Monad.ST.Ref (STRef, write, new, read)
+import Control.Monad.ST.Ref (STRef, modify, new, read, write)
 import Effect (Effect)
+import Effect.Console (logShow)
 
 type Observable a = {
-    value :: a
+    value :: a,
+    effects :: Array (Effect Unit)
 }
 type ObservableRef r a = STRef r (Observable a)
 type ObservableST  r a = ST r (Observable a)
 
 
 newObservable :: forall a r. a ->  ST r (ObservableRef r a)  
-newObservable val =  new { value : val }
+newObservable val =  new { value : val, effects : [] }
 
 getValue :: forall a r. ObservableRef r a -> ST  r a
 getValue obsRef = do
     obs    <- read obsRef
     pure   obs.value
+    
+getEffects :: forall a r. ObservableRef r a -> ST r (Array (Effect Unit))
+getEffects obsRef = do
+    obs    <- read obsRef
+    pure   obs.effects    
 
 setValue :: forall a r. a -> STRef r (Observable a) -> ST r (ObservableRef r a) 
 setValue val obsRef = do 
-    _ <- write {value: val} obsRef
+    _ <- modify (\old -> {value: val, effects: old.effects <> [logShow "***"]}) obsRef
     pure obsRef
 
 {- ST functions

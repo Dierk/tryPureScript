@@ -2,10 +2,10 @@ module Test.ObservableTest where
 
 
 import Prelude
-
+import Data.Traversable
 import Control.Monad.ST (run)
 import Effect (Effect)
-import Observable (getValue, newObservable, setValue)
+import Observable (getEffects, getValue, newObservable, setValue)
 import Test.Assert (assertEqual')
           
 
@@ -21,3 +21,5 @@ main = do
         expected: 1, 
         actual: run (newObservable 0 >>= setValue 1 >>= getValue)
         }
+    sequence_ $ run (newObservable 0 >>= setValue 1 >>= getEffects)
+    pure unit
