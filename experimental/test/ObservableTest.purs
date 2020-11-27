@@ -5,10 +5,17 @@ import Prelude
 import Data.Traversable
 import Control.Monad.ST (run)
 import Effect (Effect)
-import Observable (getEffects, getValue, newObservable, setValue)
+import Observable (getObservable, getEffects, getValue, newObservable, setValue, withObservable)
 import Test.Assert (assertEqual')
+import Effect.Console (logShow)
           
 
+observedSetValue x = 
+    let 
+        obs = run (newObservable 0 >>= setValue x >>= getObservable)
+    in do
+        logShow $ obs.value              
+    
 
 main :: Effect Unit
 main = do    
@@ -22,4 +29,10 @@ main = do
         actual: run (newObservable 0 >>= setValue 1 >>= getValue)
         }
     sequence_ $ run (newObservable 0 >>= setValue 1 >>= getEffects)
+
+    observedSetValue 1
+
+    xxx <- withObservable {value:42, effects:[]} \x -> x+1
+    yyy <- withObservable xxx                    \x -> x+1
+
     pure unit
