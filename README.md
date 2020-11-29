@@ -15,3 +15,6 @@ Notable commands (`spago <cmd> --help`)
         spago run   --path src/path/to/file
         spago test  --main Test.Main
         spago bundle-app --to index.js --path src/entry/point
+
+Working on the index.html:
+        spago bundle-app --to index.js --path experimental/src/Main.purs --watch        
