@@ -2,13 +2,9 @@ module Observable where
 
 import Prelude
 
-import Control.Monad.ST (ST, run)
-import Control.Monad.ST.Ref (STRef, modify, new, read, write)
 import Data.Array (snoc)
 import Data.Foldable (sequence_)
 import Effect (Effect)
-import Effect.Console (logShow)
-import Web.DOM.MutationObserver (observe)
 
 
 type ValueChangeListener a = ( a -> Effect Unit)
