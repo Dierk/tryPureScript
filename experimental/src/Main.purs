@@ -3,10 +3,11 @@ module Main where
 import Prelude
 
 import Data.Maybe (Maybe(..))
+import Data.String.CodeUnits (length)
 import Effect (Effect)
--- import Effect.Console (logShow)
 import Effect.Exception (throw)
-import Observable (newObservable', onChange', setValue)
+import Effect.Ref as Ref
+import Observable (Observable, newObservable, onChange, setValue)
 import Web.DOM.Element (toNode)
 import Web.DOM.Internal.Types (Element)
 import Web.DOM.Node (Node, setTextContent)
@@ -27,20 +28,20 @@ findIdInDoc id = do
     getElementById id (toNonElementParentNode doc)
 
 
-getInputElement :: Effect HTMLInputElement
-getInputElement = do
-    foo <- findIdInDoc "inText"
-    case foo of
-        Nothing      -> throw "no 'inText' node!"
+getInputElement :: String -> Effect HTMLInputElement
+getInputElement id = do
+    candidate <- findIdInDoc id
+    case candidate of
+        Nothing      -> throw $ "no elment with id '" <> id <> "' in document!"
         Just element -> case fromElement element of 
-            Nothing     -> throw "inText is not an input element"
+            Nothing     -> throw $ "element with id '" <> id <> "' is not an input element!"
             Just input  -> pure input       
 
-getNode :: Effect Node
-getNode = do 
-    foo <- findIdInDoc "outText"
-    case foo of
-        Nothing      -> throw "no 'outText' node!"
+getNodeById :: String -> Effect Node
+getNodeById id = do 
+    candidate <- findIdInDoc id
+    case candidate of
+        Nothing      -> throw $ "no node with id ¨" <> id <> "' in document!"
         Just element -> pure (toNode element) 
 
 onInput :: forall a. HTMLInputElement -> (Event -> Effect a) -> Effect Unit
@@ -48,22 +49,36 @@ onInput inputElement listener =  do
     callback <- eventListener listener     
     addEventListener (EventType "input") callback false (toEventTarget inputElement)
 
+setRefValue :: forall a. Ref.Ref (Observable a) -> a -> Effect Unit
+setRefValue obsRef val = do
+    obs    <- Ref.read obsRef
+    newObs <- setValue val obs
+    Ref.write newObs obsRef
+
+withObservable :: forall a. Ref.Ref (Observable a) -> (Observable a -> Observable a) -> Effect Unit
+withObservable obsRef doit = 
+    Ref.modify_ doit obsRef
 
 main :: Effect Unit
 main = do
-    inText  <- getInputElement
-    outText <- getNode
+    obsRef  <- Ref.new $ newObservable ""               -- nice automatic type safety !!
+        
+    inText  <- getInputElement "inText"
+    outText <- getNodeById     "outText"
+    chars   <- getNodeById     "chars"
 
-    obs <- newObservable' ""
-        >>= onChange' \val -> setTextContent val outText
+    withObservable obsRef $ onChange \value ->          -- even silly sequences work
+        setTextContent (show $ length value) chars
 
-    onInput inText \_ ->
-        value inText >>= flip setValue obs
+    onInput inText \_ -> 
+        value inText >>= setRefValue obsRef
 
-    -- since Obs.setValue and onChange create new Observables, there are a number of
-    -- issues to consider. One might need an Effect.Ref to keep track.
+    withObservable obsRef $ onChange \value -> 
+        setTextContent value outText
 
-{-  old version, with view coupling: inText knows about outText
+
+
+{-  old version, with view coupling: inText knows about outText :-((((
     onInput inText \evt -> do
         val <- value inText 
         setTextContent val outText
