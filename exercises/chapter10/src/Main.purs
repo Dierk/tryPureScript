@@ -1,6 +1,7 @@
 module Main where
 
 import Prelude
+
 import Data.AddressBook (PhoneNumber, Person, examplePerson)
 import Data.AddressBook.Validation (Errors, validatePerson')
 import Data.Argonaut (Json, decodeJson, encodeJson, jsonParser, stringify)
@@ -10,10 +11,10 @@ import Data.Either (Either(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
 import Effect (Effect)
-import Effect.Alert (alert)
-import Effect.Console (log)
+import Effect.Alert (alert, confirm)
+import Effect.Console (log, logShow)
 import Effect.Exception (throw)
-import Effect.Storage (getItem, setItem)
+import Effect.Storage (getItem, setItem, removeItem)
 import React.Basic.DOM as D
 import React.Basic.DOM.Events (targetValue)
 import React.Basic.Events (handler, handler_)
@@ -110,6 +111,17 @@ mkAddressBookApp =
           Right validPerson -> do
             setItem "person" $ stringify $ encodeJson validPerson
             log "Saved"
+      
+      confirmAndReset :: Effect Unit
+      confirmAndReset = do
+        log "confirm reset"
+        conf <- confirm "Would you like to reset the person"
+        if conf then
+          do 
+            removeItem "person"
+            log "reset"
+        else
+          log "Nothing"
 
       -- helper-function to render saveButton
       saveButton :: R.JSX
@@ -121,6 +133,18 @@ mkAddressBookApp =
                   { className: "btn-primary btn"
                   , onClick: handler_ validateAndSave
                   , children: [ D.text "Save" ]
+                  }
+              ]
+          }
+      resetButton :: R.JSX
+      resetButton =
+        D.label
+          { className: "form-group row col-form-label"
+          , children:
+              [ D.button
+                  { className: "btn-primary btn"
+                  , onClick: handler_ confirmAndReset 
+                  , children: [ D.text "Reset" ]
                   }
               ]
           }
@@ -151,7 +175,7 @@ mkAddressBookApp =
                           ]
                       }
                   ]
-                <> [ saveButton ]
+                <> [ saveButton, resetButton ]
           }
 
 processItem :: Json -> Either String Person

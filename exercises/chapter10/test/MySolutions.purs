@@ -118,3 +118,28 @@ instance decodeJsonIntOrString ::  DecodeJson IntOrString where
       , map IntOrString_String $ decodeJson j
       ]
 
+
+
+{-
+forall a. a
+var name = function () {
+  return xxx;
+};
+should use more specific type
+
+forall a. a -> a -> a
+var name = function (a) {
+  return function (b) {
+    return xxx;
+  };
+};
+add usw.
+
+forall a. Ord a => Array a -> Boolean
+var name = function (ord) {
+  return function (a) {
+    return xxx;
+  };
+};
+check if array is sorted
+-}
