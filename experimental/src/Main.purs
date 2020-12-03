@@ -32,7 +32,7 @@ getInputElement :: String -> Effect HTMLInputElement
 getInputElement id = do
     candidate <- findIdInDoc id
     case candidate of
-        Nothing      -> throw $ "no elment with id '" <> id <> "' in document!"
+        Nothing      -> throw $ "no element with id '" <> id <> "' in document!"
         Just element -> case fromElement element of 
             Nothing     -> throw $ "element with id '" <> id <> "' is not an input element!"
             Just input  -> pure input       
