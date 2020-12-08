@@ -9,10 +9,10 @@ import Effect (Effect)
 
 type ValueChangeListener a = ( a -> Effect Unit)
 
-type Observable a = {
-    value     :: a,
-    listeners :: Array (ValueChangeListener a)
-}
+type Observable a =
+    { value     :: a
+    , listeners :: Array (ValueChangeListener a)
+    }
  
 newObservable :: forall a. a -> Observable a
 newObservable val = {value: val, listeners: []}
@@ -20,10 +20,14 @@ newObservable val = {value: val, listeners: []}
 getValue :: forall a. Observable a -> a 
 getValue obs = obs.value
 
-setValue :: forall a. a -> Observable a -> Effect (Observable a) 
-setValue newValue obs = do
-    sequence_ $ map (\listener -> listener newValue) obs.listeners 
-    pure obs {value = newValue}
+setValue :: forall a. Eq a => a -> Observable a -> Effect (Observable a)
+setValue newValue obs =
+    if ( obs.value == newValue ) -- shortcircuit on same value
+        then do
+            pure obs
+        else do
+            sequence_ $ map (\listener -> listener newValue) obs.listeners
+            pure obs {value = newValue}
 
 onChange :: forall a. ValueChangeListener a -> Observable a -> Observable a 
 onChange listener obs = obs {listeners = snoc obs.listeners listener}

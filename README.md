@@ -17,4 +17,5 @@ Notable commands (`spago <cmd> --help`)
         spago bundle-app --to index.js --path src/entry/point
 
 Working on the index.html:
+
         spago bundle-app --to index.js --path experimental/src/Main.purs --watch        
