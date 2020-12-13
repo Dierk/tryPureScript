@@ -4,6 +4,7 @@ import Prelude
 import Test.MySolutions
 import Control.Monad.State
 import Data.Tuple
+import Data.Monoid.Additive
 
 import Effect (Effect)
 import Effect.Class.Console (log)
@@ -47,6 +48,22 @@ main = do
         test "example doc"
           $ Assert.equal "Here is some indented text:\n I am indented\n So am I\n  I am even more indented"
           $ exampleDoc
+      suite "Writer" do
+        test "example for summing (kind of foolish)"
+          $ Assert.equal 21
+          $ writerExample
+        test "collatz raw 1"
+          $ Assert.equal 0
+          $ collatz 1 0
+        test "collatz raw 2"
+          $ Assert.equal 1
+          $ collatz 2 0
+        test "collatz raw 3"
+          $ Assert.equal 7
+          $ collatz 3 0
+        test "collatz with Writer 3"
+          $ Assert.equal (Tuple 7 [3,10,5,16,8,4,2,1])
+          $ runCollatzW 3
 
 {-
     What is the difference between ST and State monad?
