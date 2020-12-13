@@ -11,6 +11,7 @@ You can edit this file as you like.
     , "psci-support"
     , "strings"
     , "transformers"
+    , "test-unit"
     , "yargs"
     ]
 , packages =
