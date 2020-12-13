@@ -117,9 +117,7 @@ mkAddressBookApp =
         log "confirm reset"
         conf <- confirm "Would you like to reset the person"
         if conf then
-          do 
             removeItem "person"
-            log "reset"
         else
           log "Nothing"
 

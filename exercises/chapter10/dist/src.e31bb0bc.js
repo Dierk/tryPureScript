@@ -60539,8 +60539,7 @@ var mkAddressBookApp = React_Basic_Hooks.reactComponent()()()("AddressBookApp")(
       var conf = Effect_Alert.confirm("Would you like to reset the person")();
 
       if (conf) {
-        Effect_Storage.removeItem("person")();
-        return Effect_Console.log("reset")();
+        return Effect_Storage.removeItem("person")();
       }
 
       ;
@@ -60653,7 +60652,7 @@ var main = function __do() {
       }
 
       ;
-      throw new Error("Failed pattern match at Main (line 204, column 24 - line 208, column 26): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at Main (line 202, column 24 - line 206, column 26): " + [v.constructor.name]);
     }();
 
     var app = React_Basic.element(addressBookApp)({
@@ -60663,7 +60662,7 @@ var main = function __do() {
   }
 
   ;
-  throw new Error("Failed pattern match at Main (line 197, column 3 - line 213, column 21): " + [ctr.constructor.name]);
+  throw new Error("Failed pattern match at Main (line 195, column 3 - line 211, column 21): " + [ctr.constructor.name]);
 };
 
 module.exports = {
@@ -60675,7 +60674,7 @@ module.exports = {
 };
 },{"../Control.Applicative/index.js":"../output/Control.Applicative/index.js","../Control.Bind/index.js":"../output/Control.Bind/index.js","../Data.AddressBook/index.js":"../output/Data.AddressBook/index.js","../Data.AddressBook.Validation/index.js":"../output/Data.AddressBook.Validation/index.js","../Data.Argonaut.Core/index.js":"../output/Data.Argonaut.Core/index.js","../Data.Argonaut.Decode.Class/index.js":"../output/Data.Argonaut.Decode.Class/index.js","../Data.Argonaut.Encode.Class/index.js":"../output/Data.Argonaut.Encode.Class/index.js","../Data.Argonaut.Parser/index.js":"../output/Data.Argonaut.Parser/index.js","../Data.Array/index.js":"../output/Data.Array/index.js","../Data.Bifunctor/index.js":"../output/Data.Bifunctor/index.js","../Data.Either/index.js":"../output/Data.Either/index.js","../Data.Functor/index.js":"../output/Data.Functor/index.js","../Data.Maybe/index.js":"../output/Data.Maybe/index.js","../Data.Semigroup/index.js":"../output/Data.Semigroup/index.js","../Data.Show/index.js":"../output/Data.Show/index.js","../Data.Symbol/index.js":"../output/Data.Symbol/index.js","../Data.Unit/index.js":"../output/Data.Unit/index.js","../Effect/index.js":"../output/Effect/index.js","../Effect.Alert/index.js":"../output/Effect.Alert/index.js","../Effect.Console/index.js":"../output/Effect.Console/index.js","../Effect.Exception/index.js":"../output/Effect.Exception/index.js","../Effect.Storage/index.js":"../output/Effect.Storage/index.js","../React.Basic/index.js":"../output/React.Basic/index.js","../React.Basic.DOM/index.js":"../output/React.Basic.DOM/index.js","../React.Basic.DOM.Events/index.js":"../output/React.Basic.DOM.Events/index.js","../React.Basic.DOM.Generated/index.js":"../output/React.Basic.DOM.Generated/index.js","../React.Basic.Events/index.js":"../output/React.Basic.Events/index.js","../React.Basic.Hooks/index.js":"../output/React.Basic.Hooks/index.js","../React.Basic.Hooks.Internal/index.js":"../output/React.Basic.Hooks.Internal/index.js","../Type.Equality/index.js":"../output/Type.Equality/index.js","../Web.DOM.NonElementParentNode/index.js":"../output/Web.DOM.NonElementParentNode/index.js","../Web.HTML/index.js":"../output/Web.HTML/index.js","../Web.HTML.HTMLDocument/index.js":"../output/Web.HTML.HTMLDocument/index.js","../Web.HTML.Window/index.js":"../output/Web.HTML.Window/index.js"}],"index.js":[function(require,module,exports) {
 require("../output/Main/index.js").main();
-},{"../output/Main/index.js":"../output/Main/index.js"}],"C:/Users/joele/AppData/Roaming/npm-cache/_npx/7656/node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"../output/Main/index.js":"../output/Main/index.js"}],"C:/Users/joele/AppData/Roaming/npm-cache/_npx/6080/node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -60703,7 +60702,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64387" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60326" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -60879,5 +60878,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["C:/Users/joele/AppData/Roaming/npm-cache/_npx/7656/node_modules/parcel/src/builtins/hmr-runtime.js","index.js"], null)
+},{}]},{},["C:/Users/joele/AppData/Roaming/npm-cache/_npx/6080/node_modules/parcel/src/builtins/hmr-runtime.js","index.js"], null)
 //# sourceMappingURL=/src.e31bb0bc.js.map

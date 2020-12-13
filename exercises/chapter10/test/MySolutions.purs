@@ -118,8 +118,6 @@ instance decodeJsonIntOrString ::  DecodeJson IntOrString where
       , map IntOrString_String $ decodeJson j
       ]
 
-
-
 {-
 forall a. a
 var name = function () {
