@@ -3,6 +3,7 @@ module Test.Main where
 import Prelude
 import Test.MySolutions
 import Control.Monad.State
+import Data.Either
 import Data.Tuple
 import Data.Monoid.Additive
 
@@ -64,6 +65,24 @@ main = do
         test "collatz with Writer 3"
           $ Assert.equal (Tuple 7 [3,10,5,16,8,4,2,1])
           $ runCollatzW 3
+      suite "Monad Transformers" do
+        test "safe divide 1 1"
+          $ Assert.equal (Right 1)
+          $ runSafeDivide 1 1
+        test "safe divide 1 0"
+          $ Assert.equal (Left "cannot divide by zero")
+          $ runSafeDivide 1 0
+        test "parser ok"
+          $ Assert.equal (Right (Tuple (Tuple "abc" "def") ["The state is 'abcdef'."]))
+          $ runParser (string "abc") "abcdef"
+        test "parser fail"
+          $ Assert.equal (Left ["No prefix 'abc' in 'bcdef'."])
+          $ runParser (string "abc") "bcdef"
+
+      suite "ReaderT and WriterT for Doc example" do
+        test "example doc"
+          $ Assert.equal "Here is some indented text:\n I am indented\n So am I\n  I am even more indented"
+          $ renderT exampleDocT
 
 {-
     What is the difference between ST and State monad?
@@ -75,4 +94,5 @@ main = do
 
     Balanced parentheses, see /experimental
 
+    For parsers, I would assume that one creates a specific type anyway.
 -}
