@@ -40,6 +40,13 @@ main = do
         test "runState returns a tuple of running value and inner state"
           $ Assert.equal (Tuple unit 21)
           $ stateExample runState
+      suite "Reader for Doc example" do
+        test "empty doc"
+          $ Assert.equal ""
+          $ render (line "")
+        test "example doc"
+          $ Assert.equal "Here is some indented text:\n I am indented\n So am I\n  I am even more indented"
+          $ exampleDoc
 
 {-
     What is the difference between ST and State monad?
