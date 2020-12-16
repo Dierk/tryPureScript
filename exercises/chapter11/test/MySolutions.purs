@@ -41,8 +41,7 @@ testRunState = runState (do
     sumArray [4, 5]
     sumArray [6]) 0
 
-
--- peek
+--peek
 testParens :: String -> Boolean
 testParens str = 
   let
@@ -66,7 +65,6 @@ type Level = Int
 
 type Doc = Reader Level String
 
---peek
 line :: String -> Doc
 line s = do
   level <- ask
@@ -75,12 +73,15 @@ line s = do
 indent :: Doc -> Doc
 indent = local $ (+) 1
 
--- peek
 cat :: Array Doc -> Doc
 -- sequence :: forall a m. Applicative m => t (m a) -> m (t a) 
+-- sequence :: Array ((Reader Level) String) -> ((Reader Level) (Array String))
+cat arrayDocs = do
+  arrayString <- sequence arrayDocs
+  pure $ joinWith "\n" arrayString
 -- (>=>) composeKleisli :: forall a b c m. Bind m => (a -> m b) -> (b -> m c) -> a -> m c
 -- (>>>) composeFlipped :: forall a b c d. Semigroupoid a => a b c -> a c d -> a b d
-cat = sequence >=> joinWith "\n" >>> pure
+-- cat = sequence >=> joinWith "\n" >>> pure
 
 render :: Doc -> String
 render doc = runReader doc 0
@@ -89,7 +90,6 @@ sumArrayWriter :: Array Int -> Writer (Additive Int) Unit
 sumArrayWriter = traverse_ \n -> do
   tell (Additive n)
   pure unit
-
 
 collatz :: Int -> Tuple Int (Array Int) 
 -- runWriter  :: Writer (Array Int) Int -> Tuple Int (Array Int)
@@ -145,12 +145,9 @@ string prefix = do
       put suffix
       pure prefix
 
-
---peek
 type Level' = Int
 type Doc' = WriterT (Array String) (ReaderT Level' Identity) Unit
 
---peek
 line' :: String -> Doc'
 line' s = do
   level <- lift $ ask
