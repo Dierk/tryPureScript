@@ -11,6 +11,7 @@ import Data.Either (Either)
 import Data.Identity (Identity)
 import Data.String (take, drop, toUpper, toLower)
 import Data.Tuple (Tuple)
+import Data.Array
 
 type Errors = Array String
 

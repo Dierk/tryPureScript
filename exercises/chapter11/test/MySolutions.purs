@@ -127,6 +127,7 @@ safeDivide n d = do
     0 -> throwError "denominator is Zero"
     _ -> pure (n / d)
 {-
+-- use unwrap to extract (Right 2)
 > runExceptT (safeDivide 6 3)
 (Identity (Right 2))
 > runExceptT (safeDivide 6 0)
