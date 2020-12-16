@@ -1,5 +1,8 @@
 module Main where
 
+import Control.Monad.Except
+import Control.Monad.Except.Trans
+import Control.Monad.RWS.Trans
 import Prelude
 
 import Control.Monad.RWS (RWSResult(..), runRWS)
@@ -11,7 +14,7 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (wrap)
 import Data.String (split)
 import Effect (Effect)
-import Effect.Console (log)
+import Effect.Console (log, warn, error)
 import Game (game)
 import Node.ReadLine as RL
 import Node.Yargs.Applicative (Y, runY, flag, yarg)
@@ -25,9 +28,14 @@ runGame env = do
   let
     lineHandler :: GameState -> String -> Effect Unit
     lineHandler currentState input = do
-      case runRWS (game (split (wrap " ") input)) env currentState of
-        RWSResult state _ written -> do
+      case runRWS (runExceptT (game (split (wrap " ") input))) env currentState of
+        RWSResult state result written -> do
           for_ written log
+          case result of
+            (Left a) -> do
+              for_ a (\s -> error $ "[Error] " <> s)
+              RL.setLineHandler interface $ lineHandler state
+            (Right _) -> pure unit
           RL.setLineHandler interface $ lineHandler state
       RL.prompt interface
       pure unit
@@ -36,6 +44,10 @@ runGame env = do
   RL.prompt interface
 
   pure unit
+
+--test :: String -> GameEnvironment -> GameState -> RWSResult GameState (Either (List String) Unit) (List String)
+--RWST GameEnvironment (List String) GameState Identity (Either (List String) Unit)
+-- test input env currentState = runRWS (runExceptT (game (split (wrap " ") input))) env currentState
 
 main :: Effect Unit
 main = runY (usage "$0 -p <player name>") $ map runGame env
@@ -48,3 +60,8 @@ main = runY (usage "$0 -p <player name>") $ map runGame env
                        false
           <*> flag "d" ["debug"]
                        (Just "Use debug mode")
+          <*> flag "c" ["cheat"]
+                       (Just "Use cheat mode")
+
+
+-- spago run -a "-p Phil"
