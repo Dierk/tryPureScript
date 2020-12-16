@@ -14,18 +14,6 @@ import Graphics.Canvas (Context2D, getContext2D, getCanvasElementById,
                         setFillStyle)
 import Math as Math
 import Partial.Unsafe (unsafePartial)
-import Example.Shapes
-
-import Effect.Random (random)
-
-
-transformRotate :: Context2D -> Point -> Effect Unit
-transformRotate ctx p = void do
-  translate ctx { translateX: -p.x, translateY: -p.y }
-  r <- random
-  rotate ctx r
-  translate ctx { translateX: p.x, translateY: p.y }  
-
 
 render :: Context2D -> Int -> Effect Unit
 render ctx count = void do
@@ -45,13 +33,10 @@ render ctx count = void do
     let scaleX = Math.sin (toNumber count * Math.tau / 8.0) + 1.5
     let scaleY = Math.sin (toNumber count * Math.tau / 12.0) + 1.5
 
-
-    transformRotate ctx { x: 300.0, y:  300.0 }
-
-    --translate ctx { translateX: 300.0, translateY:  300.0 }
-    --rotate ctx (toNumber count * Math.tau / 36.0)
-    --scale ctx { scaleX: scaleX, scaleY: scaleY }
-    --translate ctx { translateX: -100.0, translateY: -100.0 }
+    translate ctx { translateX: 300.0, translateY:  300.0 }
+    rotate ctx (toNumber count * Math.tau / 36.0)
+    scale ctx { scaleX: scaleX, scaleY: scaleY }
+    translate ctx { translateX: -100.0, translateY: -100.0 }
 
     fillPath ctx $ rect ctx
       { x: 0.0
