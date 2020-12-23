@@ -1,9 +1,8 @@
-module Test.Solutions where
+module Test.MySolutions where
 
 import Prelude
 
 import Control.Alt (alt)
-import Control.Apply (lift2)
 import Data.Argonaut (class DecodeJson, class EncodeJson, Json, decodeJson, encodeJson, jsonParser)
 import Data.Argonaut.Decode.Generic.Rep (genericDecodeJson)
 import Data.Argonaut.Encode.Generic.Rep (genericEncodeJson)
@@ -26,31 +25,28 @@ foreign import cumulativeSumsComplex :: Array Complex -> Array Complex
 
 foreign import quadraticRootsImpl :: (forall a. a -> a -> Pair a) -> Quadratic -> Pair Complex
 
-quadraticRoots :: Quadratic -> Pair Complex
-quadraticRoots poly = quadraticRootsImpl Pair poly
+foreign import valuesOfMapImpl :: Json -> Json
 
-foreign import valuesOfMapJson :: Json -> Json
+quadraticRoots :: Quadratic -> Pair Complex
+quadraticRoots = quadraticRootsImpl Pair
 
 valuesOfMap :: Map String Int -> Either String (Set Int)
-valuesOfMap = encodeJson >>> valuesOfMapJson >>> decodeJson
+valuesOfMap = decodeJson <<< valuesOfMapImpl <<< encodeJson
 
-valuesOfMapGeneric ::
-  forall k v.
+valuesOfMapGeneric :: forall k v.
   EncodeJson k =>
+  Ord k        =>
   EncodeJson v =>
   DecodeJson v =>
-  Ord k =>
-  Ord v =>
-  Map k v ->
-  Either String (Set v)
-valuesOfMapGeneric = encodeJson >>> valuesOfMapJson >>> decodeJson
+  Ord v        =>
+  Map k v -> Either String (Set v)
+valuesOfMapGeneric = decodeJson <<< valuesOfMapImpl <<< encodeJson
 
-foreign import quadraticRootsSetJson :: Json -> Json
+foreign import quadraticRootsSetImpl :: Quadratic -> Json
 
 quadraticRootsSet :: Quadratic -> Either String (Set Complex)
-quadraticRootsSet = encodeJson >>> quadraticRootsSetJson >>> decodeJson
+quadraticRootsSet = decodeJson <<< quadraticRootsSetImpl
 
-foreign import quadraticRootsSafeJson :: Json -> Json
 newtype WrapPair a
   = WrapPair (Pair a)
 
@@ -58,19 +54,21 @@ instance decodeJsonWrapPair :: DecodeJson a => DecodeJson (WrapPair a) where
   decodeJson j = do
     decoded <- decodeJson j
     case decoded of
-      [ a, b ] -> map WrapPair $ lift2 Pair (decodeJson a) (decodeJson b)
+      [ a, b ] -> WrapPair <$> (Pair <$> (decodeJson a) <*> (decodeJson b))
       _ -> Left "Couldn't decode WrapPair"
 
-quadraticRootsSafeWrap :: Quadratic -> Either String (WrapPair Complex)
-quadraticRootsSafeWrap = encodeJson >>> quadraticRootsSafeJson >>> decodeJson
+foreign import quadraticRootsSafeImpl :: Quadratic -> Json
 
 quadraticRootsSafe :: Quadratic -> Either String (Pair Complex)
-quadraticRootsSafe = quadraticRootsSafeWrap >>> map (\(WrapPair p) -> p)
+quadraticRootsSafe q = (\(WrapPair p) -> p) <$> quadraticRootsSafeWrap q
+
+quadraticRootsSafeWrap :: Quadratic -> Either String (WrapPair Complex)
+quadraticRootsSafeWrap = decodeJson <<< quadraticRootsSafeImpl
 
 decodeArray2D :: String -> Either String (Array (Array Int))
-decodeArray2D str = do
-  j <- jsonParser str
-  decodeJson j
+decodeArray2D s = do
+  json  <- jsonParser s
+  decodeJson json
 
 data Tree a
   = Leaf a

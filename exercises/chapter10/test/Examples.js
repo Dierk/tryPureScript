@@ -37,6 +37,8 @@ exports.addComplex = a => b => {
   }
 };
 
+
+
 exports.maybeHeadImpl = just => nothing => arr => {
   if (arr.length) {
     return just(arr[0]);
