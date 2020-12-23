@@ -24,7 +24,6 @@ type Errors = Array String
 type Log = Array String
 
 type Parser = StateT String (WriterT Log (ExceptT Errors Identity))
-type Parser' = ExceptT Errors (StateT String (WriterT Log Identity))
 
 split :: Parser String
 split = do
@@ -33,8 +32,8 @@ split = do
   case s of
     "" -> throwError ["Empty string"]
     _ -> do
-     put (drop 1 s)
-     pure (take 1 s)
+      put (drop 1 s)
+      pure (take 1 s)
 
 eof :: Parser Unit
 eof = do
@@ -61,6 +60,8 @@ runParser :: forall a. Parser a -> String -> Either Errors (Tuple (Tuple a Strin
 -- runWriterT :: ∀ w m a. WriterT w m a → m (Tuple a w)
 -- runStateT :: ∀ s m a. StateT s m a → s → m (Tuple a s)
 runParser p = runExcept <<< runWriterT <<< runStateT p
+
+type Parser' = ExceptT Errors (StateT String (WriterT Log Identity))
 
 runParser' :: forall a. Parser' a -> String -> Tuple (Tuple (Either Errors a) String) Log
 -- runWriter :: ∀ w a. Writer w a → Tuple a w ;  Tuple (Either (Array String) a0)
