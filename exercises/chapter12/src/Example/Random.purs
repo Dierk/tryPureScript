@@ -60,21 +60,14 @@ main = void $ unsafePartial do
   Just canvas <- getCanvasElementById "canvas"
   ctx <- getContext2D canvas
 
--- ANCHOR: style
   setFillStyle ctx "#F00"
   setStrokeStyle ctx "#000"
--- ANCHOR_END: style
 
--- ANCHOR: for
   for_ (1 .. 100) \_ -> do
--- ANCHOR_END: for
--- ANCHOR: random
     x <- random
     y <- random
     r <- random
--- ANCHOR_END: random
 
--- ANCHOR: path
     let path = arc ctx
          { x     : x * 600.0
          , y     : y * 600.0
