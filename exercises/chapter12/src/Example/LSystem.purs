@@ -119,10 +119,10 @@ main = void $ unsafePartial do
   setStrokeStyle ctx "#000"
   setShadowOffsetX ctx 10.0
   setShadowOffsetY ctx 40.0
-  setShadowBlur ctx 4.0
+  setShadowBlur ctx 40.0
   setShadowColor ctx "#444"
 
   --fillPath ctx $ lsystem initial productions interpret 5 initialState
   --fillPath ctx $ lsystem2 (lsystem1 initial productions 5) interpret initialState
-  fillPath ctx $ lsystem2 (lsystem1 initial2 productions2 1) interpret2 initialState
+  fillPath ctx $ lsystem2 (lsystem1 initial2 productions2 3) interpret2 initialState
 
