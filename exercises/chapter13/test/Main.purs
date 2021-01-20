@@ -2,8 +2,8 @@ module Test.Main where
 
 import Prelude
 
-import Data.Array (sort, sortBy)
-import Data.Foldable (foldr)
+import Data.Array (sort, sortBy, length, concat)
+import Data.Foldable (class Foldable, foldl, foldr)
 import Data.Function (on)
 import Data.List (List(..), fromFoldable)
 import Effect (Effect)
@@ -21,8 +21,16 @@ isSorted = go <<< fromFoldable
 ints :: Array Int -> Array Int
 ints = identity
 
+arrayInts :: Array (Array Int) -> Array (Array Int)
+arrayInts = identity
+
+bools :: Array Boolean -> Array Boolean
+bools = identity
+
 intToBool :: (Int -> Boolean) -> Int -> Boolean
 intToBool = identity
+
+
 
 treeOfInt :: Tree Int -> Tree Int
 treeOfInt = identity
@@ -38,11 +46,31 @@ main = do
     in
       eq result expected <?> "Result:\n" <> show result <> "\nnot equal to expected:\n" <> show expected
 
+  quickCheck \xs ->
+    let
+      result = merge xs []
+      expected = xs
+    in
+      eq result expected <?> "Result:\n" <> show result <> "\nnot equal to expected:\n" <> show expected
+
   quickCheck \xs ys ->
     eq (merge (sorted xs) (sorted ys)) (sort $ sorted xs <> sorted ys)
 
   quickCheck \xs ys ->
     eq (ints $ mergePoly (sorted xs) (sorted ys)) (sort $ sorted xs <> sorted ys)
+
+  quickCheck \xs ys ->
+    eq (bools $ mergePoly (sorted xs) (sorted ys)) (sort $ sorted xs <> sorted ys)
+
+  quickCheck \xxs   ->
+    let
+      result = elementCount $ arrayInts xxs where
+        elementCount :: forall a t. (Foldable t) => t (Array a) -> Int
+        elementCount = foldl (\x xs -> x + length xs) 0
+
+      expected = length $ concat xxs
+    in
+      eq result expected <?> "Result:\n" <> show result <> "\nnot equal to expected:\n" <> show expected
 
   quickCheck \xs ys f ->
     let

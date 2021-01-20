@@ -2,11 +2,10 @@ module Example.Shapes where
 
 import Prelude
 
-import Effect (Effect)
 import Data.Maybe (Maybe(..))
-import Graphics.Canvas (closePath, lineTo, moveTo, fillPath,
-                        setFillStyle, arc, rect, getContext2D,
-                        getCanvasElementById)
+import Effect (Effect, foreachE)
+import Graphics.Canvas (Context2D, arc, closePath, fillPath, getCanvasElementById, getContext2D, lineTo, moveTo, rect, setFillStyle, strokePath)
+import Math (pow)
 import Math as Math
 import Partial.Unsafe (unsafePartial)
 
@@ -22,6 +21,17 @@ translate dx dy shape = shape
   , y = shape.y + dy
   }
 -- ANCHOR_END: translate
+
+type Point = { x :: Number, y :: Number }
+
+renderPath :: Context2D -> Array Point -> Effect Unit
+renderPath ctx arr = void do
+  strokePath ctx $ do
+    foreachE arr (\p -> lineTo ctx p.x p.y)
+    closePath ctx
+
+f :: Number -> Point
+f n = {x: n * 500.0 , y: (pow n 3.0) * 500.0 }
 
 main :: Effect Unit
 main = void $ unsafePartial do
@@ -56,3 +66,5 @@ main = void $ unsafePartial do
     lineTo ctx 340.0 340.0
     closePath ctx
 -- ANCHOR_END: path
+
+  renderPath ctx [(f 0.99), (f 0.66), (f 0.33)]
